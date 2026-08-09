@@ -1,8 +1,8 @@
-'client'
+'use client';
 import React, { useState } from 'react';
 
 export default function Home() {
-  const [view, setView] = useState('home'); // 'home', 'client', 'advocaat'
+  const [view, setView] = useState('home');
   const [submitted, setSubmitted] = useState(false);
 
   if (view === 'client') {
@@ -45,7 +45,7 @@ export default function Home() {
               <div className="bg-slate-800 p-4 rounded-lg border border-slate-700 flex justify-between items-center">
                 <div>
                   <p className="font-bold">Spoedzitting Zeden / Strafrecht</p>
-                  <p className="text-sm text-gray-400">Client: Anoniem — Ingediend 5 min geleden</p>
+                  <p className="text-sm text-gray-400">Client: Anoniem — Ingediend net geleden</p>
                 </div>
                 <button onClick={() => alert('Zaak geaccepteerd!')} className="bg-emerald-600 hover:bg-emerald-500 px-4 py-2 rounded-lg text-sm font-bold">Accepteren</button>
               </div>
