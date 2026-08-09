@@ -94,7 +94,7 @@ export default function CompleteLegalPlatform() {
           </div>
         )}
 
-        {/* 2. INLOGGEN & REGISTREREN (Geen e-mailverificatie, melding om op inloggen te klikken) */}
+        {/* 2. INLOGGEN & REGISTREREN */}
         {tab === 'login' && (
           <div style={{ backgroundColor: '#0A174E', border: '1px solid #1B2A6C', borderRadius: '20px', padding: '24px' }}>
             <h2 style={{ fontSize: '22px', fontWeight: 'bold', marginBottom: '16px', textAlign: 'center' }}>Inloggen / Registreren</h2>
@@ -135,16 +135,16 @@ export default function CompleteLegalPlatform() {
                 </button>
               </form>
             ) : (
-              <div style={{ textAlign: 'center', padding: '20px 0', spaceY: '10px' }}>
-                <p style={{ color: '#4ADE80', fontWeight: 'bold', marginBottom: '12px' }}>✓ Registratie succesvol!</p>
-                <p style={{ fontSize: '13px', color: '#94A3B8', marginBottom: '16px' }}>Klik hieronder om direct in te loggen op je dashboard.</p>
-                <button onClick={() => { setAuthMode('login'); setRegisterSuccess(false); }} style={{ backgroundColor: '#F4D160', color: '#070F2B', border: 'none', padding: '10px 20px', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer' }}>Naar Inlogscherm</button>
+              <div style={{ textAlign: 'center', padding: '20px 0', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                <p style={{ color: '#4ADE80', fontWeight: 'bold', margin: 0 }}>✓ Registratie succesvol!</p>
+                <p style={{ fontSize: '13px', color: '#94A3B8', margin: 0 }}>Klik hieronder om direct in te loggen op je dashboard.</p>
+                <button onClick={() => { setAuthMode('login'); setRegisterSuccess(false); }} style={{ backgroundColor: '#F4D160', color: '#070F2B', border: 'none', padding: '10px 20px', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer', marginTop: '6px' }}>Naar Inlogscherm</button>
               </div>
             )}
           </div>
         )}
 
-        {/* 3. CLIËNT DASHBOARD (Lopende & afgehandelde zaken, reviews) */}
+        {/* 3. CLIËNT DASHBOARD */}
         {tab === 'client-dash' && (
           <div style={{ backgroundColor: '#0A174E', border: '1px solid #1B2A6C', borderRadius: '20px', padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -186,7 +186,7 @@ export default function CompleteLegalPlatform() {
           </div>
         )}
 
-        {/* 4. ADVOCAAT DASHBOARD (Profiel beheer: foto, vakgebied, ervaring, contact) */}
+        {/* 4. ADVOCAAT DASHBOARD */}
         {tab === 'lawyer-dash' && (
           <div style={{ backgroundColor: '#0A174E', border: '1px solid #1B2A6C', borderRadius: '20px', padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
