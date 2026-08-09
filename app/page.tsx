@@ -2,454 +2,231 @@
 
 import React, { useState } from 'react';
 
-export default function CompletePlatform() {
-  const [currentView, setCurrentView] = useState('home');
+export default function CompleteLegalPlatform() {
+  const [tab, setTab] = useState('home'); // 'home', 'login', 'client-dash', 'lawyer-dash', 'about', 'faq'
   const [authRole, setAuthRole] = useState('client');
   const [authMode, setAuthMode] = useState('login');
-  const [authEmail, setAuthEmail] = useState('');
-  const [authPassword, setAuthPassword] = useState('');
   const [registerSuccess, setRegisterSuccess] = useState(false);
 
-  const [caseData, setCaseData] = useState({
-    category: 'Strafrecht & Arresteringszaken',
-    description: '',
-    location: '',
-    urgency: 'Direct / Spoed (Binnen 1 uur)',
-  });
+  // Form states voor spoed
+  const [category, setCategory] = useState('Strafrecht & Arresteringszaken');
+  const [location, setLocation] = useState('');
+  const [description, setDescription] = useState('');
   const [caseSubmitted, setCaseSubmitted] = useState(false);
 
+  // Review state
   const [reviewScore, setReviewScore] = useState(5);
-  const [reviewText, setReviewText] = useState('');
   const [reviewSubmitted, setReviewSubmitted] = useState(false);
 
-  const handleAuthSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (authMode === 'register') {
-      setRegisterSuccess(true);
-    } else {
-      if (authRole === 'client') {
-        setCurrentView('client-dashboard');
-      } else {
-        setCurrentView('lawyer-dashboard');
-      }
-    }
-  };
-
-  const handleCaseSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setCaseSubmitted(true);
-  };
-
   return (
-    <div className="min-h-screen bg-[#0A1128] text-white flex flex-col justify-between selection:bg-amber-400 selection:text-slate-950 font-sans">
+    <div style={{ backgroundColor: '#070F2B', color: '#FFFFFF', minHeight: '100vh', fontFamily: 'sans-serif', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
       
-      {/* HEADER & NAVIGATIE */}
-      <header className="border-b border-blue-900/50 bg-[#0A1128]/90 backdrop-blur-md sticky top-0 z-50 px-6 py-4 flex justify-between items-center shadow-lg">
-        <div 
-          onClick={() => { setCurrentView('home'); setCaseSubmitted(false); }}
-          className="flex items-center space-x-2 cursor-pointer"
-        >
-          <span className="bg-amber-400 text-slate-950 font-black px-2.5 py-1 rounded-lg text-sm tracking-wider shadow-md">24/7</span>
-          <span className="font-extrabold text-lg tracking-tight text-white">MijnAdvocaat<span className="text-amber-400">.online</span></span>
+      {/* HEADER */}
+      <header style={{ backgroundColor: '#0A174E', borderBottom: '1px solid #1B2A6C', padding: '16px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'sticky', top: 0, zIndex: 50 }}>
+        <div onClick={() => { setTab('home'); setCaseSubmitted(false); }} style={{ cursor: 'pointer', fontWeight: 'bold', fontSize: '18px' }}>
+          MijnAdvocaat<span style={{ color: '#F4D160' }}>.online</span>
         </div>
-
-        <nav className="hidden md:flex items-center space-x-6 text-sm font-medium text-slate-200">
-          <button onClick={() => setCurrentView('home')} className="hover:text-amber-400 transition">Spoedhulp & Match</button>
-          <button onClick={() => setCurrentView('about')} className="hover:text-amber-400 transition">Wie zijn wij</button>
-          <button onClick={() => setCurrentView('faq')} className="hover:text-amber-400 transition">Help & FAQ</button>
-        </nav>
-
-        <div className="flex items-center space-x-3 text-sm">
-          <button 
-            onClick={() => { setAuthMode('login'); setRegisterSuccess(false); setCurrentView('login'); }}
-            className="text-slate-200 hover:text-white px-3 py-2 transition"
-          >
-            Inloggen
-          </button>
-          <button 
-            onClick={() => { setAuthMode('register'); setRegisterSuccess(false); setCurrentView('login'); }}
-            className="bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold px-4 py-2 rounded-xl transition shadow-lg shadow-amber-400/20"
-          >
-            Registreren
-          </button>
+        <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+          <button onClick={() => setTab('home')} style={{ background: 'transparent', border: 'none', color: tab === 'home' ? '#F4D160' : '#FFF', cursor: 'pointer', fontSize: '14px' }}>Spoed & Match</button>
+          <button onClick={() => setTab('about')} style={{ background: 'transparent', border: 'none', color: tab === 'about' ? '#F4D160' : '#FFF', cursor: 'pointer', fontSize: '14px' }}>Wie zijn wij</button>
+          <button onClick={() => setTab('faq')} style={{ background: 'transparent', border: 'none', color: tab === 'faq' ? '#F4D160' : '#FFF', cursor: 'pointer', fontSize: '14px' }}>Help</button>
+          <button onClick={() => { setAuthMode('login'); setRegisterSuccess(false); setTab('login'); }} style={{ backgroundColor: '#F4D160', color: '#070F2B', border: 'none', padding: '8px 16px', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer', fontSize: '14px' }}>Inloggen</button>
         </div>
       </header>
 
-      {/* DYNAMISCHE PAGINA INHOUD */}
-      <main className="max-w-4xl w-full mx-auto px-4 py-10 flex-grow">
+      {/* BODY */}
+      <main style={{ maxWidth: '650px', width: '100%', margin: '0 auto', padding: '32px 16px', flexGrow: 1 }}>
 
-        {/* 1. HOME / SPOED & MATCH SCHERM */}
-        {currentView === 'home' && (
-          <div className="space-y-10">
-            <div className="bg-gradient-to-br from-[#101C44] to-[#0D1636] border border-blue-900/60 rounded-3xl p-8 shadow-2xl relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-64 h-64 bg-amber-400/5 rounded-full blur-3xl pointer-events-none"></div>
-              
-              {!caseSubmitted ? (
-                <>
-                  <div className="mb-6">
-                    <span className="bg-amber-400/10 border border-amber-400/30 text-amber-300 text-xs font-bold px-3 py-1.5 rounded-full inline-block mb-3">
-                      🚨 Directe Noodlijn (Geen registratie verplicht voor spoed)
-                    </span>
-                    <h1 className="text-3xl md:text-4xl font-black text-white tracking-tight mb-2">Direct een advocaat spreken bij nood of zaak</h1>
-                    <p className="text-slate-300 text-sm md:text-base">Heb je direct juridische bijstand nodig? Vul je zaak in en ons systeem alarmeert direct de dichtstbijzijnde beschikbare specialist.</p>
+        {/* 1. HOME & SPOED (Geen inlog verplicht) */}
+        {tab === 'home' && (
+          <div style={{ backgroundColor: '#0A174E', border: '1px solid #1B2A6C', borderRadius: '20px', padding: '24px', boxShadow: '0 8px 24px rgba(0,0,0,0.4)' }}>
+            {!caseSubmitted ? (
+              <div>
+                <span style={{ backgroundColor: 'rgba(239, 68, 68, 0.2)', color: '#F87171', padding: '4px 12px', borderRadius: '20px', fontSize: '12px', fontWeight: 'bold', display: 'inline-block', marginBottom: '12px' }}>
+                  🚨 24/7 Noodlijn (Direct bereikbaar zonder inlog)
+                </span>
+                <h1 style={{ fontSize: '24px', fontWeight: 'bold', margin: '0 0 8px 0' }}>Direct een advocaat spreken bij nood</h1>
+                <p style={{ color: '#94A3B8', fontSize: '14px', marginBottom: '20px' }}>Selecteer hieronder je rechtsgebied. Onze specialisten worden direct gealarmeerd.</p>
+
+                <form onSubmit={(e) => { e.preventDefault(); setCaseSubmitted(true); }} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '12px', fontWeight: 'bold', color: '#F4D160', marginBottom: '6px' }}>UITGEBREID RECHTSGEBIED</label>
+                    <select value={category} onChange={(e) => setCategory(e.target.value)} style={{ width: '100%', padding: '12px', borderRadius: '10px', backgroundColor: '#070F2B', color: '#FFF', border: '1px solid #1B2A6C', boxSizing: 'border-box' }}>
+                      <optgroup label="Strafrecht & Nood">
+                        <option value="Strafrecht & Arresteringszaken">Strafrecht & Arresteringszaken</option>
+                        <option value="Verkeersovertredingen & DUI">Verkeersovertredingen & Rijbewijs kwijt</option>
+                        <option value="Jeugdstrafrecht">Jeugdstrafrecht</option>
+                      </optgroup>
+                      <optgroup label="Werk & Inkomen">
+                        <option value="Arbeidsconflict & Ontslag op staande voet">Arbeidsconflict & Ontslag op staande voet</option>
+                        <option value="UWV & Uitkeringen">UWV, Sociale Zekerheid & Bijstand</option>
+                      </optgroup>
+                      <optgroup label="Wonen & Familie">
+                        <option value="Huurrecht & Uithuiszetting">Huurrecht & Dreigende Uithuiszetting</option>
+                        <option value="Echtscheiding & Spoed Omgang">Echtscheiding & Spoed Omgang / Gezag</option>
+                      </optgroup>
+                    </select>
                   </div>
 
-                  <form onSubmit={handleCaseSubmit} className="space-y-5">
-                    <div>
-                      <label className="block text-xs font-bold uppercase tracking-wider text-amber-400/90 mb-2">Selecteer Rechtsgebied</label>
-                      <select 
-                        value={caseData.category}
-                        onChange={(e) => setCaseData({...caseData, category: e.target.value})}
-                        className="w-full bg-[#070D21] border border-blue-900 rounded-xl px-4 py-3 text-slate-100 focus:border-amber-400 focus:outline-none transition"
-                      >
-                        <optgroup label="Strafrecht & Nood">
-                          <option value="Strafrecht & Arresteringszaken">Strafrecht & Arresteringszaken</option>
-                          <option value="Verkeersovertredingen & DUI">Verkeersovertredingen & DUI / Rijbewijs kwijt</option>
-                          <option value="Jeugdstrafrecht">Jeugdstrafrecht</option>
-                        </optgroup>
-                        <optgroup label="Werk & Inkomen">
-                          <option value="Arbeidsconflict & Ontslag op staande voet">Arbeidsconflict & Ontslag op staande voet</option>
-                          <option value="UWV & Uitkeringen">UWV, Sociale Zekerheid & Bijstand</option>
-                        </optgroup>
-                        <optgroup label="Wonen & Familie">
-                          <option value="Huurrecht & Uithuiszetting">Huurrecht & Dreigende Uithuiszetting</option>
-                          <option value="Echtscheiding & Spoed Omgang">Echtscheiding & Spoed Omgang / Gezag</option>
-                        </optgroup>
-                      </select>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-xs font-bold uppercase tracking-wider text-amber-400/90 mb-2">Locatie / Plaats</label>
-                        <input 
-                          type="text" 
-                          required
-                          placeholder="Bijv. Rotterdam"
-                          value={caseData.location}
-                          onChange={(e) => setCaseData({...caseData, location: e.target.value})}
-                          className="w-full bg-[#070D21] border border-blue-900 rounded-xl px-4 py-3 text-slate-100 focus:border-amber-400 focus:outline-none transition"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-xs font-bold uppercase tracking-wider text-amber-400/90 mb-2">Urgentie niveau</label>
-                        <select 
-                          value={caseData.urgency}
-                          onChange={(e) => setCaseData({...caseData, urgency: e.target.value})}
-                          className="w-full bg-[#070D21] border border-blue-900 rounded-xl px-4 py-3 text-slate-100 focus:border-amber-400 focus:outline-none transition"
-                        >
-                          <option value="Direct / Spoed (Binnen 1 uur)">Direct / Spoed (Binnen 1 uur)</option>
-                          <option value="Vandaag nog">Vandaag nog</option>
-                          <option value="Binnen 24 uur">Binnen 24 uur</option>
-                        </select>
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-bold uppercase tracking-wider text-amber-400/90 mb-2">Korte omschrijving van de situatie</label>
-                      <textarea 
-                        rows={3}
-                        required
-                        placeholder="Wat is er gebeurd en waarbij heb je direct hulp nodig?"
-                        value={caseData.description}
-                        onChange={(e) => setCaseData({...caseData, description: e.target.value})}
-                        className="w-full bg-[#070D21] border border-blue-900 rounded-xl px-4 py-3 text-slate-100 focus:border-amber-400 focus:outline-none transition resize-none"
-                      />
-                    </div>
-
-                    <button 
-                      type="submit"
-                      className="w-full bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold py-4 rounded-xl shadow-xl shadow-amber-400/20 transition cursor-pointer text-base"
-                    >
-                      🚨 Activeer Directe Nood-Match met Advocaat
-                    </button>
-                  </form>
-                </>
-              ) : (
-                <div className="text-center py-8 space-y-6">
-                  <div className="w-16 h-16 bg-amber-400/10 text-amber-400 rounded-full flex items-center justify-center mx-auto text-3xl border border-amber-400/30">
-                    ✓
+                  <div>
+                    <label style={{ display: 'block', fontSize: '12px', fontWeight: 'bold', color: '#F4D160', marginBottom: '6px' }}>LOCATIE / PLAATS</label>
+                    <input type="text" required placeholder="Bijv. Rotterdam of Amsterdam" value={location} onChange={(e) => setLocation(e.target.value)} style={{ width: '100%', padding: '12px', borderRadius: '10px', backgroundColor: '#070F2B', color: '#FFF', border: '1px solid #1B2A6C', boxSizing: 'border-box' }} />
                   </div>
-                  <div className="space-y-2">
-                    <h2 className="text-2xl font-bold text-white">Noodsignaal succesvol verzonden!</h2>
-                    <p className="text-slate-300 text-sm max-w-md mx-auto">
-                      Advocaten gespecialiseerd in <strong className="text-white">{caseData.category}</strong> te <strong className="text-white">{caseData.location}</strong> hebben jouw melding ontvangen. Je wordt zo snel mogelijk gebeld of gecontacteerd.
-                    </p>
+
+                  <div>
+                    <label style={{ display: 'block', fontSize: '12px', fontWeight: 'bold', color: '#F4D160', marginBottom: '6px' }}>KORTE OMSCHRIJVING</label>
+                    <textarea rows={3} required placeholder="Wat is er gebeurd?" value={description} onChange={(e) => setDescription(e.target.value)} style={{ width: '100%', padding: '12px', borderRadius: '10px', backgroundColor: '#070F2B', color: '#FFF', border: '1px solid #1B2A6C', boxSizing: 'border-box' }} />
                   </div>
-                  <div className="pt-4">
-                    <button 
-                      onClick={() => setCaseSubmitted(false)}
-                      className="bg-blue-900/60 hover:bg-blue-900 text-white font-semibold px-6 py-3 rounded-xl text-sm transition border border-blue-700/50"
-                    >
-                      Nog een melding maken
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
 
-        {/* 2. INLOGGEN & REGISTREREN SCHERM */}
-        {currentView === 'login' && (
-          <div className="max-w-md mx-auto bg-[#101C44] border border-blue-900/60 rounded-3xl p-8 shadow-2xl">
-            <div className="text-center mb-6">
-              <h2 className="text-2xl font-black text-white">
-                {authMode === 'login' ? 'Inloggen op je Portaal' : 'Account Aanmaken'}
-              </h2>
-              <p className="text-slate-300 text-xs mt-1">
-                {authMode === 'login' ? 'Beheer je lopende en afgehandelde zaken' : 'Geen e-mailverificatie vereist. Direct aan de slag!'}
-              </p>
-            </div>
-
-            {!registerSuccess ? (
-              <form onSubmit={handleAuthSubmit} className="space-y-4">
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-amber-400/90 mb-2">Ik ben een:</label>
-                  <div className="grid grid-cols-2 gap-2">
-                    <button
-                      type="button"
-                      onClick={() => setAuthRole('client')}
-                      className={`py-2.5 rounded-xl text-xs font-bold transition border ${authRole === 'client' ? 'bg-amber-400 text-slate-950 border-amber-400' : 'bg-[#070D21] text-slate-300 border-blue-900'}`}
-                    >
-                      Cliënt / Burger
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setAuthRole('lawyer')}
-                      className={`py-2.5 rounded-xl text-xs font-bold transition border ${authRole === 'lawyer' ? 'bg-amber-400 text-slate-950 border-amber-400' : 'bg-[#070D21] text-slate-300 border-blue-900'}`}
-                    >
-                      Advocaat / Specialist
-                    </button>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-amber-400/90 mb-2">E-mailadres</label>
-                  <input 
-                    type="email" 
-                    required
-                    placeholder="naam@voorbeeld.nl"
-                    value={authEmail}
-                    onChange={(e) => setAuthEmail(e.target.value)}
-                    className="w-full bg-[#070D21] border border-blue-900 rounded-xl px-4 py-3 text-slate-100 focus:border-amber-400 focus:outline-none transition text-sm"
-                  />
-                </div>
-
-                <div>
-                  <div className="flex justify-between items-center mb-2">
-                    <label className="text-xs font-bold uppercase tracking-wider text-amber-400/90">Wachtwoord</label>
-                    {authMode === 'login' && (
-                      <a href="#wachtwoord" onClick={(e) => { e.preventDefault(); alert('Instructies om je wachtwoord te resetten zijn naar je verzonden (simulatie).'); }} className="text-xs text-amber-300 hover:underline">Wachtwoord vergeten?</a>
-                    )}
-                  </div>
-                  <input 
-                    type="password" 
-                    required
-                    placeholder="••••••••"
-                    value={authPassword}
-                    onChange={(e) => setAuthPassword(e.target.value)}
-                    className="w-full bg-[#070D21] border border-blue-900 rounded-xl px-4 py-3 text-slate-100 focus:border-amber-400 focus:outline-none transition text-sm"
-                  />
-                </div>
-
-                <button 
-                  type="submit"
-                  className="w-full bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold py-3.5 rounded-xl transition shadow-lg shadow-amber-400/10 text-sm mt-2"
-                >
-                  {authMode === 'login' ? 'Inloggen' : 'Registreren & Direct Doorgaan'}
-                </button>
-              </form>
+                  <button type="submit" style={{ backgroundColor: '#F4D160', color: '#070F2B', border: 'none', padding: '14px', borderRadius: '10px', fontWeight: 'bold', fontSize: '15px', cursor: 'pointer', marginTop: '6px' }}>
+                    🚨 Activeer Directe Nood-Match met Advocaat
+                  </button>
+                </form>
+              </div>
             ) : (
-              <div className="text-center py-6 space-y-4">
-                <div className="w-12 h-12 bg-amber-400/10 text-amber-400 rounded-full flex items-center justify-center mx-auto text-xl border border-amber-400/30">
-                  ✓
-                </div>
-                <p className="text-sm text-slate-200">Je account is succesvol aangemaakt! Klik hieronder om in te loggen op je dashboard.</p>
-                <button 
-                  onClick={() => { setAuthMode('login'); setRegisterSuccess(false); }}
-                  className="w-full bg-amber-400 text-slate-950 font-bold py-3 rounded-xl text-sm"
-                >
-                  Nu Inloggen
-                </button>
+              <div style={{ textAlign: 'center', padding: '30px 0' }}>
+                <div style={{ fontSize: '48px', marginBottom: '12px' }}>✅</div>
+                <h2 style={{ fontSize: '22px', fontWeight: 'bold', marginBottom: '8px' }}>Noodsignaal Verzonden!</h2>
+                <p style={{ color: '#94A3B8', fontSize: '14px', marginBottom: '24px' }}>Advocaten voor {category} in {location} zijn direct ingeschakeld om contact met je op te nemen.</p>
+                <button onClick={() => setCaseSubmitted(false)} style={{ backgroundColor: '#1B2A6C', color: '#FFF', border: 'none', padding: '12px 24px', borderRadius: '10px', cursor: 'pointer', fontWeight: 'bold' }}>Nieuwe melding</button>
               </div>
             )}
           </div>
         )}
 
-        {/* 3. CLIËNT DASHBOARD */}
-        {currentView === 'client-dashboard' && (
-          <div className="space-y-6">
-            <div className="bg-[#101C44] border border-blue-900/65 rounded-3xl p-6 flex justify-between items-center">
+        {/* 2. INLOGGEN & REGISTREREN (Geen e-mailverificatie, melding om op inloggen te klikken) */}
+        {tab === 'login' && (
+          <div style={{ backgroundColor: '#0A174E', border: '1px solid #1B2A6C', borderRadius: '20px', padding: '24px' }}>
+            <h2 style={{ fontSize: '22px', fontWeight: 'bold', marginBottom: '16px', textAlign: 'center' }}>Inloggen / Registreren</h2>
+            
+            <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
+              <button onClick={() => setAuthRole('client')} style={{ flex: 1, padding: '10px', borderRadius: '8px', border: 'none', backgroundColor: authRole === 'client' ? '#F4D160' : '#070F2B', color: authRole === 'client' ? '#070F2B' : '#FFF', fontWeight: 'bold', cursor: 'pointer' }}>Cliënt</button>
+              <button onClick={() => setAuthRole('lawyer')} style={{ flex: 1, padding: '10px', borderRadius: '8px', border: 'none', backgroundColor: authRole === 'lawyer' ? '#F4D160' : '#070F2B', color: authRole === 'lawyer' ? '#070F2B' : '#FFF', fontWeight: 'bold', cursor: 'pointer' }}>Advocaat</button>
+            </div>
+
+            {!registerSuccess ? (
+              <form onSubmit={(e) => { 
+                e.preventDefault(); 
+                if (authMode === 'register') {
+                  setRegisterSuccess(true);
+                } else {
+                  if (authRole === 'client') setTab('client-dash');
+                  else setTab('lawyer-dash');
+                }
+              }} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                
+                <div style={{ display: 'flex', gap: '10px', marginBottom: '6px', fontSize: '13px' }}>
+                  <span onClick={() => setAuthMode('login')} style={{ cursor: 'pointer', fontWeight: authMode === 'login' ? 'bold' : 'normal', color: authMode === 'login' ? '#F4D160' : '#94A3B8' }}>Inloggen</span>
+                  <span>|</span>
+                  <span onClick={() => setAuthMode('register')} style={{ cursor: 'pointer', fontWeight: authMode === 'register' ? 'bold' : 'normal', color: authMode === 'register' ? '#F4D160' : '#94A3B8' }}>Registreren</span>
+                </div>
+
+                <input type="email" required placeholder="E-mailadres" style={{ padding: '12px', borderRadius: '10px', backgroundColor: '#070F2B', color: '#FFF', border: '1px solid #1B2A6C' }} />
+                <input type="password" required placeholder="Wachtwoord" style={{ padding: '12px', borderRadius: '10px', backgroundColor: '#070F2B', color: '#FFF', border: '1px solid #1B2A6C' }} />
+                
+                {authMode === 'login' && (
+                  <div style={{ textAlign: 'right' }}>
+                    <a href="#forgot" onClick={(e) => { e.preventDefault(); alert('Wachtwoord resetinstructie verzonden.'); }} style={{ fontSize: '11px', color: '#F4D160', textDecoration: 'none' }}>Wachtwoord vergeten?</a>
+                  </div>
+                )}
+
+                <button type="submit" style={{ backgroundColor: '#F4D160', color: '#070F2B', border: 'none', padding: '12px', borderRadius: '10px', fontWeight: 'bold', cursor: 'pointer', marginTop: '8px' }}>
+                  {authMode === 'login' ? 'Inloggen op Portaal' : 'Account Aanmaken'}
+                </button>
+              </form>
+            ) : (
+              <div style={{ textAlign: 'center', padding: '20px 0', spaceY: '10px' }}>
+                <p style={{ color: '#4ADE80', fontWeight: 'bold', marginBottom: '12px' }}>✓ Registratie succesvol!</p>
+                <p style={{ fontSize: '13px', color: '#94A3B8', marginBottom: '16px' }}>Klik hieronder om direct in te loggen op je dashboard.</p>
+                <button onClick={() => { setAuthMode('login'); setRegisterSuccess(false); }} style={{ backgroundColor: '#F4D160', color: '#070F2B', border: 'none', padding: '10px 20px', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer' }}>Naar Inlogscherm</button>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* 3. CLIËNT DASHBOARD (Lopende & afgehandelde zaken, reviews) */}
+        {tab === 'client-dash' && (
+          <div style={{ backgroundColor: '#0A174E', border: '1px solid #1B2A6C', borderRadius: '20px', padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
-                <span className="text-xs font-bold uppercase tracking-wider text-amber-400">Cliënt Portaal</span>
-                <h2 className="text-2xl font-black text-white">Welkom terug</h2>
+                <span style={{ fontSize: '11px', color: '#F4D160', fontWeight: 'bold' }}>CLIËNT PORTAAL</span>
+                <h2 style={{ fontSize: '20px', fontWeight: 'bold', margin: 0 }}>Mijn Zaken</h2>
               </div>
-              <button onClick={() => setCurrentView('home')} className="text-xs bg-blue-900/60 hover:bg-blue-900 px-4 py-2 rounded-xl text-white border border-blue-800">Uitloggen</button>
+              <button onClick={() => setTab('home')} style={{ backgroundColor: '#1B2A6C', color: '#FFF', border: 'none', padding: '6px 12px', borderRadius: '8px', fontSize: '12px', cursor: 'pointer' }}>Uitloggen</button>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-[#101C44] border border-blue-900/60 rounded-3xl p-6 space-y-4">
-                <h3 className="text-lg font-bold text-white flex items-center space-x-2">
-                  <span>📂 Lopende Zaken</span>
-                </h3>
-                <div className="bg-[#070D21] border border-amber-400/30 rounded-2xl p-4 space-y-2">
-                  <div className="flex justify-between items-center text-xs">
-                    <span className="bg-amber-400/10 text-amber-300 px-2.5 py-0.5 rounded-full font-semibold">Gekoppeld & Actief</span>
-                    <span className="text-slate-400">Vandaag</span>
-                  </div>
-                  <h4 className="font-bold text-white text-sm">Arbeidsconflict & Ontslag op staande voet</h4>
-                  <p className="text-xs text-slate-300">Behandeld door: <strong className="text-white">Mr. J. de Vries (Advocaat)</strong></p>
-                  <div className="pt-2 border-t border-blue-900/60 flex justify-between items-center">
-                    <span className="text-xs text-amber-400">status: Dossier in behandeling</span>
-                    <button onClick={() => alert('Open gezamenlijk portaal chat / informatie.')} className="text-xs bg-amber-400 text-slate-950 font-bold px-3 py-1.5 rounded-lg shadow">Open Portaal</button>
-                  </div>
-                </div>
-              </div>
+            {/* Lopende zaak */}
+            <div style={{ backgroundColor: '#070F2B', border: '1px solid #1B2A6C', borderRadius: '14px', padding: '16px' }}>
+              <span style={{ backgroundColor: 'rgba(244, 209, 96, 0.15)', color: '#F4D160', padding: '2px 8px', borderRadius: '6px', fontSize: '11px', fontWeight: 'bold' }}>Lopende Zaak</span>
+              <h4 style={{ margin: '8px 0 4px 0', fontSize: '15px' }}>Arbeidsconflict & Ontslag op staande voet</h4>
+              <p style={{ fontSize: '12px', color: '#94A3B8', margin: '0 0 10px 0' }}>Advocaat: Mr. J. de Vries</p>
+              <button onClick={() => alert('Gezamenlijk dossier & chat geopend.')} style={{ backgroundColor: '#F4D160', color: '#070F2B', border: 'none', padding: '8px 14px', borderRadius: '8px', fontSize: '12px', fontWeight: 'bold', cursor: 'pointer' }}>Open Gezamenlijk Portaal</button>
+            </div>
 
-              <div className="bg-[#101C44] border border-blue-900/60 rounded-3xl p-6 space-y-4">
-                <h3 className="text-lg font-bold text-white">✅ Afgehandelde Zaken & Reviews</h3>
-                <div className="bg-[#070D21] border border-blue-900/60 rounded-2xl p-4 space-y-3">
-                  <div className="flex justify-between items-center text-xs">
-                    <span className="bg-blue-950 text-slate-300 px-2.5 py-0.5 rounded-full border border-blue-900">Afgesloten</span>
-                    <span className="text-slate-400">Vorige maand</span>
+            {/* Afgehandelde zaak & Review */}
+            <div style={{ backgroundColor: '#070F2B', border: '1px solid #1B2A6C', borderRadius: '14px', padding: '16px' }}>
+              <span style={{ backgroundColor: '#1B2A6C', color: '#FFF', padding: '2px 8px', borderRadius: '6px', fontSize: '11px' }}>Afgehandeld</span>
+              <h4 style={{ margin: '8px 0 4px 0', fontSize: '15px' }}>Verkeersovertreding</h4>
+              <p style={{ fontSize: '12px', color: '#94A3B8', margin: '0 0 10px 0' }}>Advocaat: Mr. A. Bakker</p>
+              
+              {!reviewSubmitted ? (
+                <div style={{ borderTop: '1px solid #1B2A6C', paddingTop: '10px' }}>
+                  <p style={{ fontSize: '12px', marginBottom: '6px' }}>Geef deze advocaat een cijfer:</p>
+                  <div style={{ display: 'flex', gap: '6px', marginBottom: '8px' }}>
+                    {[1, 2, 3, 4, 5].map(n => (
+                      <button key={n} onClick={() => setReviewScore(n)} style={{ background: reviewScore >= n ? '#F4D160' : '#1B2A6C', color: reviewScore >= n ? '#070F2B' : '#FFF', border: 'none', width: '28px', height: '28px', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer', fontSize: '12px' }}>{n}★</button>
+                    ))}
                   </div>
-                  <h4 className="font-bold text-white text-sm">Verkeersovertreding / Snelheid</h4>
-                  <p className="text-xs text-slate-300">Advocaat: Mr. A. Bakker</p>
-
-                  {!reviewSubmitted ? (
-                    <div className="pt-3 border-t border-blue-900/60 space-y-2">
-                      <p className="text-xs font-semibold text-slate-300">Geef deze advocaat een cijfer:</p>
-                      <div className="flex space-x-2">
-                        {[1, 2, 3, 4, 5].map((num) => (
-                          <button 
-                            key={num} 
-                            onClick={() => setReviewScore(num)}
-                            className={`w-7 h-7 rounded-lg text-xs font-bold ${reviewScore >= num ? 'bg-amber-400 text-slate-950' : 'bg-blue-950 text-slate-300 border border-blue-900'}`}
-                          >
-                            {num}★
-                          </button>
-                        ))}
-                      </div>
-                      <input 
-                        type="text" 
-                        placeholder="Korte review opmerking..." 
-                        value={reviewText}
-                        onChange={(e) => setReviewText(e.target.value)}
-                        className="w-full bg-[#101C44] border border-blue-900 rounded-lg px-3 py-2 text-xs text-slate-100"
-                      />
-                      <button 
-                        onClick={() => setReviewSubmitted(true)}
-                        className="w-full bg-blue-900 hover:bg-blue-800 text-white text-xs font-bold py-2 rounded-lg transition border border-blue-700/50"
-                      >
-                        Plaats Review & Cijfer
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="text-xs text-amber-300 font-semibold pt-2">
-                      ✓ Bedankt! Je review ({reviewScore} sterren) is succesvol geplaatst op het profiel van de advocaat.
-                    </div>
-                  )}
+                  <button onClick={() => setReviewSubmitted(true)} style={{ backgroundColor: '#1B2A6C', color: '#FFF', border: 'none', padding: '6px 12px', borderRadius: '6px', fontSize: '11px', cursor: 'pointer' }}>Plaats Review</button>
                 </div>
-              </div>
+              ) : (
+                <p style={{ fontSize: '12px', color: '#4ADE80', margin: 0 }}>✓ Review ({reviewScore} sterren) geplaatst op profiel!</p>
+              )}
             </div>
           </div>
         )}
 
-        {/* 4. ADVOCAAT DASHBOARD & PROFIEL BEHEER */}
-        {currentView === 'lawyer-dashboard' && (
-          <div className="space-y-6">
-            <div className="bg-[#101C44] border border-blue-900/60 rounded-3xl p-6 flex justify-between items-center">
+        {/* 4. ADVOCAAT DASHBOARD (Profiel beheer: foto, vakgebied, ervaring, contact) */}
+        {tab === 'lawyer-dash' && (
+          <div style={{ backgroundColor: '#0A174E', border: '1px solid #1B2A6C', borderRadius: '20px', padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
-                <span className="text-xs font-bold uppercase tracking-wider text-amber-400">Advocaten Portaal</span>
-                <h2 className="text-2xl font-black text-white">Mr. de Specialist</h2>
+                <span style={{ fontSize: '11px', color: '#F4D160', fontWeight: 'bold' }}>ADVOCATEN PORTAAL</span>
+                <h2 style={{ fontSize: '20px', fontWeight: 'bold', margin: 0 }}>Profiel & Zaken</h2>
               </div>
-              <button onClick={() => setCurrentView('home')} className="text-xs bg-blue-900/60 hover:bg-blue-900 px-4 py-2 rounded-xl text-white border border-blue-800">Uitloggen</button>
+              <button onClick={() => setTab('home')} style={{ backgroundColor: '#1B2A6C', color: '#FFF', border: 'none', padding: '6px 12px', borderRadius: '8px', fontSize: '12px', cursor: 'pointer' }}>Uitloggen</button>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="bg-[#101C44] border border-blue-900/60 rounded-3xl p-6 space-y-4 md:col-span-1">
-                <h3 className="text-base font-bold text-white">👤 Openbaar Profiel Beheer</h3>
-                <div className="space-y-3 text-xs">
-                  <div>
-                    <label className="block text-slate-300 mb-1">Upload Profieldo / Foto</label>
-                    <input type="file" className="w-full text-slate-300 bg-[#070D21] border border-blue-900 rounded-xl p-2 text-xs" />
-                  </div>
-                  <div>
-                    <label className="block text-slate-300 mb-1">Vakgebied(en)</label>
-                    <input type="text" defaultValue="Strafrecht, Arbeidsrecht" className="w-full bg-[#070D21] border border-blue-900 rounded-xl p-2.5 text-slate-100" />
-                  </div>
-                  <div>
-                    <label className="block text-slate-300 mb-1">Ervaring (Hoe lang actief)</label>
-                    <input type="text" defaultValue="12 jaar ervaring" className="w-full bg-[#070D21] border border-blue-900 rounded-xl p-2.5 text-slate-100" />
-                  </div>
-                  <div>
-                    <label className="block text-slate-300 mb-1">Contactgegevens & E-mail</label>
-                    <input type="email" defaultValue="advocaat@mijnadvocaat.online" className="w-full bg-[#070D21] border border-blue-900 rounded-xl p-2.5 text-slate-100" />
-                  </div>
-                  <button onClick={() => alert('Profiel succesvol opgeslagen en online gezet!')} className="w-full bg-amber-400 text-slate-950 font-bold py-2.5 rounded-xl shadow">Profiel Online Zetten</button>
-                </div>
-              </div>
-
-              <div className="bg-[#101C44] border border-blue-900/60 rounded-3xl p-6 space-y-4 md:col-span-2">
-                <h3 className="text-base font-bold text-white">⚖️ Actieve Cliëntendossiers & Matches</h3>
-                <div className="bg-[#070D21] border border-blue-900/60 rounded-2xl p-4 space-y-3">
-                  <div className="flex justify-between items-center text-xs">
-                    <span className="bg-amber-400/10 text-amber-300 px-2.5 py-0.5 rounded-full font-semibold border border-amber-400/20">Spoedmelding</span>
-                    <span className="text-slate-400">Rotterdam</span>
-                  </div>
-                  <h4 className="font-bold text-white text-sm">Arbeidsconflict & Ontslag op staande voet</h4>
-                  <p className="text-xs text-slate-300">Cliënt vraagt om directe juridische bemiddeling en telefonisch contact.</p>
-                  <div className="flex space-x-2 pt-2">
-                    <button onClick={() => alert('Verbinding gestart met cliënt.')} className="bg-amber-400 text-slate-950 font-bold text-xs px-4 py-2 rounded-xl shadow">Neem Zaak Aan & Open Portaal</button>
-                    <button onClick={() => alert('Zaak overgeslagen.')} className="bg-blue-950 text-slate-200 text-xs px-4 py-2 rounded-xl border border-blue-900">Doorsturen</button>
-                  </div>
-                </div>
+            <div style={{ backgroundColor: '#070F2B', border: '1px solid #1B2A6C', borderRadius: '14px', padding: '16px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              <h3 style={{ fontSize: '14px', fontWeight: 'bold', color: '#F4D160', margin: 0 }}>👤 Mijn Online Profiel Beheren</h3>
+              <div style={{ fontSize: '12px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <label>Profieldossier / Foto uploaden: <input type="file" style={{ display: 'block', marginTop: '4px' }} /></label>
+                <label>Vakgebied(en): <input type="text" defaultValue="Strafrecht & Arbeidsrecht" style={{ width: '100%', padding: '8px', borderRadius: '6px', backgroundColor: '#0A174E', border: '1px solid #1B2A6C', color: '#FFF', marginTop: '4px' }} /></label>
+                <label>Ervaring (Hoe lang actief): <input type="text" defaultValue="10 jaar ervaring" style={{ width: '100%', padding: '8px', borderRadius: '6px', backgroundColor: '#0A174E', border: '1px solid #1B2A6C', color: '#FFF', marginTop: '4px' }} /></label>
+                <label>E-mail & Contactgegevens: <input type="email" defaultValue="mr.advocaat@mijnadvocaat.online" style={{ width: '100%', padding: '8px', borderRadius: '6px', backgroundColor: '#0A174E', border: '1px solid #1B2A6C', color: '#FFF', marginTop: '4px' }} /></label>
+                <button onClick={() => alert('Profiel succesvol online gezet!')} style={{ backgroundColor: '#F4D160', color: '#070F2B', border: 'none', padding: '10px', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer', marginTop: '4px' }}>Profiel Opslaan & Online zetten</button>
               </div>
             </div>
           </div>
         )}
 
-        {/* 5. WIE ZIJN WIJ MENU */}
-        {currentView === 'about' && (
-          <div className="bg-[#101C44] border border-blue-900/60 rounded-3xl p-8 space-y-6">
-            <h2 className="text-3xl font-black text-white">Wie zijn wij & Waar we voor staan</h2>
-            <p className="text-slate-300 text-sm leading-relaxed">
-              MijnAdvocaat.online is opgericht met een helder doel: juridische hulp direct, transparant en toegankelijk maken wanneer elke seconde telt. Geen langdurige wachttijden of onduidelijke tarieven, maar een directe match tussen cliënt en gespecialiseerde advocaat.
-            </p>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4">
-              <div className="bg-[#070D21] p-5 rounded-2xl border border-blue-900/60">
-                <h4 className="font-bold text-amber-400 text-sm mb-1">⚡ 24/7 Bereikbaarheid</h4>
-                <p className="text-xs text-slate-300">Spoedgevallen kennen geen kantoortijden. Onze advocaten staan paraat.</p>
-              </div>
-              <div className="bg-[#070D21] p-5 rounded-2xl border border-blue-900/60">
-                <h4 className="font-bold text-amber-400 text-sm mb-1">🤝 Eerlijke Matches</h4>
-                <p className="text-xs text-slate-300">Altijd gekoppeld aan een specialist die past bij jouw specifieke rechtsgebied.</p>
-              </div>
-              <div className="bg-[#070D21] p-5 rounded-2xl border border-blue-900/60">
-                <h4 className="font-bold text-amber-400 text-sm mb-1">🔒 Veilig & Vertrouwd</h4>
-                <p className="text-xs text-slate-300">Gezamenlijke beveiligde portalen waarin alle dossierinformatie centraal staat.</p>
-              </div>
-            </div>
+        {/* 5. WIE ZIJN WIJ */}
+        {tab === 'about' && (
+          <div style={{ backgroundColor: '#0A174E', border: '1px solid #1B2A6C', borderRadius: '20px', padding: '24px' }}>
+            <h2 style={{ fontSize: '22px', fontWeight: 'bold', marginBottom: '12px' }}>Wie zijn wij & Waar we voor staan</h2>
+            <p style={{ color: '#94A3B8', fontSize: '14px', lineHeight: '1.6' }}>MijnAdvocaat.online brengt burgers en gespecialiseerde advocaten direct samen. Snel, helder en transparant, vooral wanneer elke seconde telt bij een juridisch spoedgeval.</p>
           </div>
         )}
 
-        {/* 6. HELP & FAQ MENU */}
-        {currentView === 'faq' && (
-          <div className="bg-[#101C44] border border-blue-900/60 rounded-3xl p-8 space-y-6">
-            <h2 className="text-3xl font-black text-white">Veelgestelde Vragen (FAQ)</h2>
-            <div className="space-y-4 text-sm">
-              <div className="bg-[#070D21] p-4 rounded-2xl border border-blue-900/60">
-                <h4 className="font-bold text-white mb-1">Moet ik ingelogd zijn om een spoedmelding te doen?</h4>
-                <p className="text-xs text-slate-300">Nee, voor acute spoedgevallen kun je direct via de hoofdpagina een melding indienen zonder dat je vooraf een account hoeft aan te maken.</p>
-              </div>
-              <div className="bg-[#070D21] p-4 rounded-2xl border border-blue-900/60">
-                <h4 className="font-bold text-white mb-1">Hoe werkt het gezamenlijke portaal?</h4>
-                <p className="text-xs text-slate-300">Zodra een advocaat je zaak aanneemt, ontstaat er een beveiligd gezamenlijk portaal waar jullie documenten, statussen en contactgegevens kunnen inzien.</p>
-              </div>
-              <div className="bg-[#070D21] p-4 rounded-2xl border border-blue-900/60">
-                <h4 className="font-bold text-white mb-1">Kan ik een review achterlaten voor een advocaat?</h4>
-                <p className="text-xs text-slate-300">Ja, zodra een zaak is afgehandeld kun je in je cliëntenportaal een cijfer en een beoordeling achterlaten die direct op het profiel van de advocaat wordt getoond.</p>
-              </div>
+        {/* 6. HELP & FAQ */}
+        {tab === 'faq' && (
+          <div style={{ backgroundColor: '#0A174E', border: '1px solid #1B2A6C', borderRadius: '20px', padding: '24px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <h2 style={{ fontSize: '22px', fontWeight: 'bold', marginBottom: '8px' }}>Veelgestelde Vragen</h2>
+            <div style={{ fontSize: '13px', borderBottom: '1px solid #1B2A6C', paddingBottom: '8px' }}>
+              <strong>Moet ik inloggen voor een spoedmelding?</strong><br /><span style={{ color: '#94A3B8' }}>Nee, je kunt direct via de startpagina een zaak indienen zonder account.</span>
+            </div>
+            <div style={{ fontSize: '13px', borderBottom: '1px solid #1B2A6C', paddingBottom: '8px' }}>
+              <strong>Hoe werkt het gezamenlijke portaal?</strong><br /><span style={{ color: '#94A3B8' }}>Zodra een advocaat je zaak aanneemt, kun je via je cliëntenportaal direct dossierinformatie inzien.</span>
             </div>
           </div>
         )}
@@ -457,9 +234,10 @@ export default function CompletePlatform() {
       </main>
 
       {/* FOOTER */}
-      <footer className="border-t border-blue-900/50 bg-[#070D21] px-6 py-6 text-center text-xs text-slate-400">
-        &copy; 2026 MijnAdvocaat.online. Alle rechten voorbehouden. Direct verbonden met de juiste specialist.
+      <footer style={{ textAlign: 'center', padding: '20px', fontSize: '12px', color: '#94A3B8', borderTop: '1px solid #1B2A6C' }}>
+        &copy; 2026 MijnAdvocaat.online. Alle rechten voorbehouden.
       </footer>
+
     </div>
   );
 }
