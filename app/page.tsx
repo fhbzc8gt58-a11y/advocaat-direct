@@ -11,7 +11,7 @@ export default function CompleteLegalPlatform() {
   const [authEmail, setAuthEmail] = useState('');
   const [authPassword, setAuthPassword] = useState('');
 
-  // Uitgebreide zaak data inclusief pro deo en document upload
+  // Zaak data
   const [caseData, setCaseData] = useState({
     category: 'Strafrecht & Arresteringszaken',
     description: '',
@@ -23,6 +23,14 @@ export default function CompleteLegalPlatform() {
 
   const [reviewScore, setReviewScore] = useState(5);
   const [reviewSubmitted, setReviewSubmitted] = useState(false);
+  const [chatOpened, setChatOpened] = useState(false);
+  const [docUploaded, setDocUploaded] = useState(false);
+
+  // Gedeelde chat state zodat cliënt en advocaat dezelfde berichten zien
+  const [chatMessages, setChatMessages] = useState([
+    { sender: 'lawyer', text: 'Welkom bij het beveiligde portaal. Hoe kan ik u vandaag verder helpen met uw zaak?', time: '10:00' },
+  ]);
+  const [newMessage, setNewMessage] = useState('');
 
   // Advocaat profiel & beschikbaarheid state
   const [lawyerProfile, setLawyerProfile] = useState({
@@ -30,11 +38,9 @@ export default function CompleteLegalPlatform() {
     specialism: 'Strafrecht & Letselschade',
     experience: '12 jaar ervaring',
     isAvailable: true,
-    photoUrl: 'https://images.unsplash.com/photo-1556157382-97eda2d62296?auto=format&fit=crop&w=300&q=80',
   });
   const [profileSaved, setProfileSaved] = useState(false);
 
-  // Lijst van openbare advocaten voor cliënten om te bekijken
   const publicLawyers = [
     { id: 1, name: 'Mr. J. de Vries', specialism: 'Strafrecht & Arresteringszaken', experience: '12 jaar', available: true, rating: '4.9 ★', photo: 'https://images.unsplash.com/photo-1556157382-97eda2d62296?auto=format&fit=crop&w=300&q=80' },
     { id: 2, name: 'Mr. A. Bakker', specialism: 'Arbeidsconflict & Ontslag', experience: '9 jaar', available: true, rating: '4.8 ★', photo: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80' },
@@ -57,6 +63,13 @@ export default function CompleteLegalPlatform() {
   const handleCaseSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setCaseSubmitted(true);
+  };
+
+  const handleSendMessage = (senderType: 'client' | 'lawyer') => {
+    if (!newMessage.trim()) return;
+    const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    setChatMessages([...chatMessages, { sender: senderType, text: newMessage, time: timeStr }]);
+    setNewMessage('');
   };
 
   return (
@@ -96,12 +109,12 @@ export default function CompleteLegalPlatform() {
       </header>
 
       {/* DYNAMISCHE PAGINA INHOUD */}
-      <main style={{ maxWidth: '56rem', width: '100%', margin: '0 auto', padding: '2.5rem 1rem', flexGrow: 1 }}>
+      <main style={{ maxWidth: '56rem', width: '100%', margin: '0 auto', padding: '2rem 1rem 4rem 1rem', flexGrow: 1, display: 'flex', flexDirection: 'column', gap: '2rem' }}>
 
         {/* 1. HOME / SPOED & MATCH SCHERM */}
         {currentView === 'home' && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
-            <div style={{ backgroundColor: '#121F49', border: '1px solid #1E3A8A', borderRadius: '1.5rem', padding: '2rem', position: 'relative', overflow: 'hidden', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+            <div style={{ backgroundColor: '#121F49', border: '1px solid #1E3A8A', borderRadius: '1.5rem', padding: '1.5rem', position: 'relative', overflow: 'hidden', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)' }}>
               
               {!caseSubmitted ? (
                 <>
@@ -109,8 +122,8 @@ export default function CompleteLegalPlatform() {
                     <span style={{ backgroundColor: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)', color: '#FCA5A5', fontSize: '0.75rem', fontWeight: 'bold', padding: '0.375rem 0.75rem', borderRadius: '9999px', display: 'inline-block', marginBottom: '0.75rem' }}>
                       Directe Noodlijn (Geen registratie verplicht voor spoed)
                     </span>
-                    <h1 style={{ fontSize: '2.25rem', fontWeight: 900, color: '#ffffff', letterSpacing: '-0.025em', marginBottom: '0.5rem', lineHeight: 1.2 }}>Direct een advocaat spreken bij nood of zaak</h1>
-                    <p style={{ color: '#CBD5E1', fontSize: '1rem' }}>Heb je direct juridische bijstand nodig? Vul je zaak in en ons systeem alarmeert direct de dichtstbijzijnde beschikbare specialist.</p>
+                    <h1 style={{ fontSize: '1.75rem', fontWeight: 900, color: '#ffffff', letterSpacing: '-0.025em', marginBottom: '0.5rem', lineHeight: 1.2 }}>Direct een advocaat spreken bij nood of zaak</h1>
+                    <p style={{ color: '#CBD5E1', fontSize: '0.875rem' }}>Heb je direct juridische bijstand nodig? Vul je zaak in en ons systeem alarmeert direct de dichtstbijzijnde beschikbare specialist.</p>
                   </div>
 
                   <form onSubmit={handleCaseSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
@@ -208,12 +221,12 @@ export default function CompleteLegalPlatform() {
                   </form>
                 </>
               ) : (
-                <div style={{ textAlign: 'center', padding: '3rem 0', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                  <div style={{ width: '5rem', height: '5rem', backgroundColor: 'rgba(16, 185, 129, 0.1)', color: '#34D399', borderRadius: '9999px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto', fontSize: '2rem', border: '1px solid rgba(16, 185, 129, 0.2)' }}>
+                <div style={{ textAlign: 'center', padding: '2rem 0', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                  <div style={{ width: '4rem', height: '4rem', backgroundColor: 'rgba(16, 185, 129, 0.1)', color: '#34D399', borderRadius: '9999px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto', fontSize: '1.75rem', border: '1px solid rgba(16, 185, 129, 0.2)' }}>
                     ✓
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                    <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#ffffff' }}>Noodsignaal succesvol verzonden!</h2>
+                    <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', color: '#ffffff' }}>Noodsignaal succesvol verzonden!</h2>
                     <p style={{ color: '#CBD5E1', fontSize: '0.875rem', maxWidth: '28rem', margin: '0 auto' }}>
                       Advocaten gespecialiseerd in <strong style={{ color: '#ffffff' }}>{caseData.category}</strong> te <strong style={{ color: '#ffffff' }}>{caseData.location}</strong> hebben jouw melding ontvangen. Je wordt zo snel mogelijk gecontacteerd.
                     </p>
@@ -234,10 +247,10 @@ export default function CompleteLegalPlatform() {
 
         {/* OPENBAAR ADVOCATENOVERZICHT */}
         {currentView === 'lawyers-directory' && (
-          <div style={{ backgroundColor: '#121F49', border: '1px solid #1E3A8A', borderRadius: '1.5rem', padding: '2rem', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          <div style={{ backgroundColor: '#121F49', border: '1px solid #1E3A8A', borderRadius: '1.5rem', padding: '1.5rem', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
             <div>
               <span style={{ fontSize: '0.75rem', fontWeight: 'bold', color: '#FBBF24', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Specialisten</span>
-              <h2 style={{ fontSize: '1.75rem', fontWeight: 900, color: '#ffffff' }}>Onze Aangesloten Advocaten</h2>
+              <h2 style={{ fontSize: '1.5rem', fontWeight: 900, color: '#ffffff' }}>Onze Aangesloten Advocaten</h2>
               <p style={{ color: '#CBD5E1', fontSize: '0.875rem', marginTop: '0.25rem' }}>Bekijk hier direct de profielen, specialisaties en reviews van onze ervaren advocaten.</p>
             </div>
 
@@ -245,9 +258,9 @@ export default function CompleteLegalPlatform() {
               {publicLawyers.map((l) => (
                 <div key={l.id} style={{ backgroundColor: '#070D21', border: '1px solid #1E3A8A', borderRadius: '1rem', padding: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                   <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-                    <img src={l.photo} alt={l.name} style={{ width: '4rem', height: '4rem', borderRadius: '9999px', objectFit: 'cover', border: '2px solid #FBBF24' }} />
+                    <img src={l.photo} alt={l.name} style={{ width: '3.5rem', height: '3.5rem', borderRadius: '9999px', objectFit: 'cover', border: '2px solid #FBBF24' }} />
                     <div>
-                      <h3 style={{ fontWeight: 'bold', fontSize: '1rem', color: '#ffffff' }}>{l.name}</h3>
+                      <h3 style={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#ffffff' }}>{l.name}</h3>
                       <p style={{ fontSize: '0.75rem', color: '#FBBF24' }}>{l.specialism}</p>
                       <span style={{ fontSize: '0.75rem', color: '#CBD5E1' }}>{l.experience} • {l.rating}</span>
                     </div>
@@ -271,9 +284,9 @@ export default function CompleteLegalPlatform() {
 
         {/* 2. INLOGGEN & REGISTREREN SCHERM */}
         {currentView === 'login' && (
-          <div style={{ maxWidth: '28rem', margin: '0 auto', backgroundColor: '#121F49', border: '1px solid #1E3A8A', borderRadius: '1.5rem', padding: '2rem', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)' }}>
+          <div style={{ maxWidth: '28rem', width: '100%', margin: '0 auto', backgroundColor: '#121F49', border: '1px solid #1E3A8A', borderRadius: '1.5rem', padding: '1.5rem', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)' }}>
             <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
-              <h2 style={{ fontSize: '1.5rem', fontWeight: 900, color: '#ffffff' }}>
+              <h2 style={{ fontSize: '1.25rem', fontWeight: 900, color: '#ffffff' }}>
                 {authMode === 'login' ? 'Inloggen op je Portaal' : 'Account Aanmaken'}
               </h2>
               <p style={{ color: '#CBD5E1', fontSize: '0.75rem', marginTop: '0.25rem' }}>
@@ -318,9 +331,6 @@ export default function CompleteLegalPlatform() {
                 <div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
                     <label style={{ fontSize: '0.75rem', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.05em', color: '#FBBF24' }}>Wachtwoord</label>
-                    {authMode === 'login' && (
-                      <a href="#wachtwoord" onClick={(e) => { e.preventDefault(); alert('Wachtwoord resetinstructie verzonden.'); }} style={{ fontSize: '0.75rem', color: '#FBBF24', textDecoration: 'none' }}>Wachtwoord vergeten?</a>
-                    )}
                   </div>
                   <input 
                     type="password" 
@@ -360,13 +370,13 @@ export default function CompleteLegalPlatform() {
           </div>
         )}
 
-        {/* 3. CLIËNT DASHBOARD MET LIVE DOSSIER STATUS & DOCUMENT UPLOAD */}
+        {/* 3. CLIËNT DASHBOARD */}
         {currentView === 'client-dash' && (
-          <div style={{ backgroundColor: '#121F49', border: '1px solid #1E3A8A', borderRadius: '1.5rem', padding: '2rem', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          <div style={{ backgroundColor: '#121F49', border: '1px solid #1E3A8A', borderRadius: '1.5rem', padding: '1.5rem', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(30, 58, 138, 0.6)', paddingBottom: '1rem' }}>
               <div>
                 <span style={{ fontSize: '0.75rem', fontWeight: 'bold', color: '#FBBF24', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Cliënt Portaal</span>
-                <h2 style={{ fontSize: '1.5rem', fontWeight: 900, color: '#ffffff' }}>Mijn Zaken & Dossiers</h2>
+                <h2 style={{ fontSize: '1.25rem', fontWeight: 900, color: '#ffffff' }}>Mijn Zaken & Dossiers</h2>
               </div>
               <button 
                 onClick={() => setCurrentView('home')}
@@ -383,11 +393,11 @@ export default function CompleteLegalPlatform() {
               </div>
               
               <div>
-                <h3 style={{ fontWeight: 'bold', fontSize: '1rem', color: '#ffffff' }}>Arbeidsconflict & Ontslag op staande voet</h3>
+                <h3 style={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#ffffff' }}>Arbeidsconflict & Ontslag op staande voet</h3>
                 <p style={{ fontSize: '0.75rem', color: '#CBD5E1', marginTop: '0.25rem' }}>Toegewezen Advocaat: <strong style={{ color: '#ffffff' }}>{lawyerProfile.name}</strong></p>
               </div>
 
-              {/* Live Dossier Status Tracker */}
+              {/* Dossier Status Tracker */}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.5rem', paddingTop: '0.5rem' }}>
                 <div style={{ textAlign: 'center' }}>
                   <div style={{ height: '0.375rem', backgroundColor: '#34D399', borderRadius: '9999px', marginBottom: '0.25rem' }}></div>
@@ -411,21 +421,51 @@ export default function CompleteLegalPlatform() {
                 <label style={{ fontSize: '0.75rem', fontWeight: 600, color: '#F8FAFC' }}>Extra bewijsstuk of document toevoegen aan dossier:</label>
                 <div style={{ display: 'flex', gap: '0.5rem' }}>
                   <input type="file" style={{ flex: 1, backgroundColor: '#121F49', border: '1px solid #1E3A8A', borderRadius: '0.5rem', padding: '0.375rem', fontSize: '0.75rem', color: '#94A3B8' }} />
-                  <button onClick={() => alert('Document succesvol toegevoegd aan je dossier.')} style={{ backgroundColor: '#1E3A8A', color: '#ffffff', fontSize: '0.75rem', padding: '0.375rem 0.75rem', borderRadius: '0.5rem', border: 'none', cursor: 'pointer', fontWeight: 600 }}>Upload</button>
+                  <button onClick={() => setDocUploaded(true)} style={{ backgroundColor: '#1E3A8A', color: '#ffffff', fontSize: '0.75rem', padding: '0.375rem 0.75rem', borderRadius: '0.5rem', border: 'none', cursor: 'pointer', fontWeight: 600 }}>Upload</button>
                 </div>
+                {docUploaded && <span style={{ color: '#34D399', fontSize: '0.75rem' }}>Document succesvol toegevoegd aan je dossier!</span>}
               </div>
 
-              <button 
-                onClick={() => alert('Gezamenlijk portaal & beveiligde chat geopend.')}
-                style={{ backgroundColor: '#FBBF24', color: '#0A1128', fontWeight: 'bold', padding: '0.625rem 1rem', borderRadius: '0.75rem', fontSize: '0.75rem', border: 'none', cursor: 'pointer', width: 'fit-content' }}
-              >
-                Open Gezamenlijk Portaal & Chat
-              </button>
+              {/* GEZAMENLIJKE LIVE CHAT (CLIËNT ZIJDE) */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', borderTop: '1px solid #1E293B', paddingTop: '0.75rem' }}>
+                <button 
+                  onClick={() => setChatOpened(!chatOpened)}
+                  style={{ backgroundColor: '#FBBF24', color: '#0A1128', fontWeight: 'bold', padding: '0.625rem 1rem', borderRadius: '0.75rem', fontSize: '0.75rem', border: 'none', cursor: 'pointer', width: 'fit-content' }}
+                >
+                  {chatOpened ? 'Sluit Beveiligde Chat' : 'Open Gezamenlijk Portaal & Chat met Mr. J. de Vries'}
+                </button>
+
+                {chatOpened && (
+                  <div style={{ backgroundColor: '#121F49', border: '1px solid #1E3A8A', borderRadius: '0.75rem', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.75rem', marginTop: '0.5rem' }}>
+                    <div style={{ fontSize: '0.75rem', color: '#CBD5E1', maxHeight: '12rem', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.5rem', paddingRight: '0.25rem' }}>
+                      {chatMessages.map((msg, idx) => (
+                        <div key={idx} style={{ alignSelf: msg.sender === 'client' ? 'flex-end' : 'flex-start', backgroundColor: msg.sender === 'client' ? '#1D4ED8' : '#1E293B', padding: '0.5rem 0.75rem', borderRadius: '0.5rem', maxWidth: '80%' }}>
+                          <span style={{ fontSize: '0.625rem', color: '#FBBF24', display: 'block', marginBottom: '0.125rem' }}>
+                            {msg.sender === 'client' ? 'Jij (Cliënt)' : lawyerProfile.name} ({msg.time})
+                          </span>
+                          <p style={{ color: '#ffffff', fontSize: '0.75rem', margin: 0 }}>{msg.text}</p>
+                        </div>
+                      ))}
+                    </div>
+                    <div style={{ display: 'flex', gap: '0.5rem', borderTop: '1px solid #1E293B', paddingTop: '0.5rem' }}>
+                      <input 
+                        type="text" 
+                        placeholder="Typ je bericht aan je advocaat..." 
+                        value={newMessage}
+                        onChange={(e) => setNewMessage(e.target.value)}
+                        onKeyDown={(e) => { if (e.key === 'Enter') handleSendMessage('client'); }}
+                        style={{ flex: 1, backgroundColor: '#070D21', border: '1px solid #1E3A8A', borderRadius: '0.5rem', padding: '0.5rem', fontSize: '0.75rem', color: '#ffffff', outline: 'none' }} 
+                      />
+                      <button onClick={() => handleSendMessage('client')} style={{ backgroundColor: '#FBBF24', color: '#0A1128', border: 'none', padding: '0.5rem 0.75rem', borderRadius: '0.5rem', fontSize: '0.75rem', fontWeight: 'bold', cursor: 'pointer' }}>Verstuur</button>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
 
             <div style={{ backgroundColor: '#070D21', border: '1px solid #1E3A8A', borderRadius: '1rem', padding: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
               <span style={{ backgroundColor: '#0F172A', color: '#CBD5E1', fontSize: '0.625rem', fontWeight: 500, padding: '0.25rem 0.6rem', borderRadius: '0.375rem', border: '1px solid #1E3A8A', width: 'fit-content' }}>Afgehandeld</span>
-              <h3 style={{ fontWeight: 'bold', fontSize: '1rem', color: '#ffffff' }}>Verkeersovertreding</h3>
+              <h3 style={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#ffffff' }}>Verkeersovertreding</h3>
               <p style={{ fontSize: '0.75rem', color: '#CBD5E1' }}>Toegewezen Advocaat: <strong style={{ color: '#ffffff' }}>Mr. A. Bakker</strong></p>
               
               {!reviewSubmitted ? (
@@ -444,7 +484,7 @@ export default function CompleteLegalPlatform() {
                   </div>
                   <button 
                     onClick={() => setReviewSubmitted(true)}
-                    style={{ backgroundColor: '#1E3A8A', color: '#ffffff', fontWeight: 600, padding: '0.375rem 0.75rem', borderRadius: '0.5rem', fontSize: '0.75rem', border: 'none', cursor: 'pointer', width: 'fit-content', marginTop: '0.25rem' }}
+                    style={{ backgroundColor: '#1E3A8A', color: '#ffffff', fontWeight: 600, padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.75rem', border: 'none', cursor: 'pointer', width: 'fit-content', marginTop: '0.25rem' }}
                   >
                     Plaats Review
                   </button>
@@ -456,13 +496,13 @@ export default function CompleteLegalPlatform() {
           </div>
         )}
 
-        {/* 4. ADVOCAAT DASHBOARD MET BESCHIKBAARHEID EN OPENBAAR PROFIEL */}
+        {/* 4. ADVOCAAT DASHBOARD */}
         {currentView === 'lawyer-dash' && (
-          <div style={{ backgroundColor: '#121F49', border: '1px solid #1E3A8A', borderRadius: '1.5rem', padding: '2rem', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          <div style={{ backgroundColor: '#121F49', border: '1px solid #1E3A8A', borderRadius: '1.5rem', padding: '1.5rem', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(30, 58, 138, 0.6)', paddingBottom: '1rem' }}>
               <div>
                 <span style={{ fontSize: '0.75rem', fontWeight: 'bold', color: '#FBBF24', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Advocaten Portaal</span>
-                <h2 style={{ fontSize: '1.5rem', fontWeight: 900, color: '#ffffff' }}>Profiel & Beschikbaarheid</h2>
+                <h2 style={{ fontSize: '1.25rem', fontWeight: 900, color: '#ffffff' }}>Mijn Zaken & Gekoppelde Cliënten</h2>
               </div>
               <button 
                 onClick={() => setCurrentView('home')}
@@ -472,12 +512,13 @@ export default function CompleteLegalPlatform() {
               </button>
             </div>
 
-            <div style={{ backgroundColor: '#070D21', border: '1px solid #1E3A8A', borderRadius: '1rem', padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            {/* Status & Beschikbaarheid Instellen */}
+            <div style={{ backgroundColor: '#070D21', border: '1px solid #1E3A8A', borderRadius: '1rem', padding: '1.25rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <h3 style={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#FBBF24', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Mijn Openbare Profiel & Foto</h3>
+                <h3 style={{ fontWeight: 'bold', fontSize: '0.75rem', color: '#FBBF24', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Beschikbaarheid voor Spoed</h3>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                   <span style={{ fontSize: '0.75rem', color: lawyerProfile.isAvailable ? '#34D399' : '#EF4444', fontWeight: 600 }}>
-                    {lawyerProfile.isAvailable ? 'Direct Beschikbaar voor Spoed' : 'Niet Beschikbaar'}
+                    {lawyerProfile.isAvailable ? 'Beschikbaar' : 'Niet Beschikbaar'}
                   </span>
                   <button 
                     onClick={() => setLawyerProfile({...lawyerProfile, isAvailable: !lawyerProfile.isAvailable})}
@@ -487,46 +528,68 @@ export default function CompleteLegalPlatform() {
                   </button>
                 </div>
               </div>
+            </div>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', fontSize: '0.75rem', color: '#CBD5E1' }}>
-                <div>
-                  <label style={{ display: 'block', marginBottom: '0.25rem', color: '#F8FAFC', fontWeight: 600 }}>Volledige Naam:</label>
-                  <input 
-                    type="text" 
-                    value={lawyerProfile.name}
-                    onChange={(e) => setLawyerProfile({...lawyerProfile, name: e.target.value})}
-                    style={{ width: '100%', backgroundColor: '#121F49', border: '1px solid #1E3A8A', borderRadius: '0.75rem', padding: '0.625rem 0.875rem', color: '#ffffff', outline: 'none' }} 
-                  />
+            {/* GEKOPPELDE ZAAK IN ADVOCAAT DASHBOARD MET LIVE CHAT */}
+            <div style={{ backgroundColor: '#070D21', border: '1px solid #1E3A8A', borderRadius: '1rem', padding: '1.25rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ backgroundColor: 'rgba(52, 211, 153, 0.1)', color: '#34D399', border: '1px solid rgba(52, 211, 153, 0.2)', fontSize: '0.625rem', fontWeight: 'bold', padding: '0.25rem 0.6rem', borderRadius: '0.375rem', textTransform: 'uppercase' }}>Actieve Match</span>
+                <span style={{ fontSize: '0.75rem', color: '#CBD5E1' }}>Cliënt: Burger / Aanmelder</span>
+              </div>
+
+              <div>
+                <h3 style={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#ffffff' }}>{caseData.category}</h3>
+                <p style={{ fontSize: '0.75rem', color: '#CBD5E1', marginTop: '0.25rem' }}>Omschrijving: <strong style={{ color: '#ffffff' }}>{caseData.description || 'Geen extra omschrijving opgegeven'}</strong></p>
+                <p style={{ fontSize: '0.75rem', color: '#CBD5E1', marginTop: '0.125rem' }}>Locatie: <strong style={{ color: '#ffffff' }}>{caseData.location || 'Onbekend'}</strong> | Financiering: <strong style={{ color: '#ffffff' }}>{caseData.fundingType}</strong></p>
+              </div>
+
+              {/* LIVE CHAT (ADVOCAAT ZIJDE) */}
+              <div style={{ borderTop: '1px solid #1E293B', paddingTop: '0.75rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                <span style={{ fontSize: '0.75rem', fontWeight: 'bold', color: '#FBBF24' }}>Gezamenlijke Dossier- & Chatverbinding met Cliënt:</span>
+                
+                <div style={{ backgroundColor: '#121F49', border: '1px solid #1E3A8A', borderRadius: '0.75rem', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                  <div style={{ fontSize: '0.75rem', color: '#CBD5E1', maxHeight: '12rem', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.5rem', paddingRight: '0.25rem' }}>
+                    {chatMessages.map((msg, idx) => (
+                      <div key={idx} style={{ alignSelf: msg.sender === 'lawyer' ? 'flex-end' : 'flex-start', backgroundColor: msg.sender === 'lawyer' ? '#1D4ED8' : '#1E293B', padding: '0.5rem 0.75rem', borderRadius: '0.5rem', maxWidth: '80%' }}>
+                        <span style={{ fontSize: '0.625rem', color: '#FBBF24', display: 'block', marginBottom: '0.125rem' }}>
+                          {msg.sender === 'lawyer' ? 'Jij (Advocaat)' : 'Cliënt'} ({msg.time})
+                        </span>
+                        <p style={{ color: '#ffffff', fontSize: '0.75rem', margin: 0 }}>{msg.text}</p>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div style={{ display: 'flex', gap: '0.5rem', borderTop: '1px solid #1E293B', paddingTop: '0.5rem' }}>
+                    <input 
+                      type="text" 
+                      placeholder="Typ als advocaat een reactie naar de cliënt..." 
+                      value={newMessage}
+                      onChange={(e) => setNewMessage(e.target.value)}
+                      onKeyDown={(e) => { if (e.key === 'Enter') handleSendMessage('lawyer'); }}
+                      style={{ flex: 1, backgroundColor: '#070D21', border: '1px solid #1E3A8A', borderRadius: '0.5rem', padding: '0.5rem', fontSize: '0.75rem', color: '#ffffff', outline: 'none' }} 
+                    />
+                    <button onClick={() => handleSendMessage('lawyer')} style={{ backgroundColor: '#FBBF24', color: '#0A1128', border: 'none', padding: '0.5rem 0.75rem', borderRadius: '0.5rem', fontSize: '0.75rem', fontWeight: 'bold', cursor: 'pointer' }}>Antwoord</button>
+                  </div>
                 </div>
-                <div>
-                  <label style={{ display: 'block', marginBottom: '0.25rem', color: '#F8FAFC', fontWeight: 600 }}>Openbare Profieldossier / Foto uploaden:</label>
-                  <input type="file" style={{ display: 'block', color: '#94A3B8', fontSize: '0.75rem' }} />
-                </div>
-                <div>
-                  <label style={{ display: 'block', marginBottom: '0.25rem', color: '#F8FAFC', fontWeight: 600 }}>Vakgebied(en):</label>
-                  <input 
-                    type="text" 
-                    value={lawyerProfile.specialism}
-                    onChange={(e) => setLawyerProfile({...lawyerProfile, specialism: e.target.value})}
-                    style={{ width: '100%', backgroundColor: '#121F49', border: '1px solid #1E3A8A', borderRadius: '0.75rem', padding: '0.625rem 0.875rem', color: '#ffffff', outline: 'none' }} 
-                  />
-                </div>
-                <div>
-                  <label style={{ display: 'block', marginBottom: '0.25rem', color: '#F8FAFC', fontWeight: 600 }}>Ervaring:</label>
-                  <input 
-                    type="text" 
-                    value={lawyerProfile.experience}
-                    onChange={(e) => setLawyerProfile({...lawyerProfile, experience: e.target.value})}
-                    style={{ width: '100%', backgroundColor: '#121F49', border: '1px solid #1E3A8A', borderRadius: '0.75rem', padding: '0.625rem 0.875rem', color: '#ffffff', outline: 'none' }} 
-                  />
-                </div>
+              </div>
+            </div>
+
+            <div style={{ backgroundColor: '#070D21', border: '1px solid #1E3A8A', borderRadius: '1rem', padding: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              <h3 style={{ fontWeight: 'bold', fontSize: '0.75rem', color: '#FBBF24', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Profielgegevens Aanpassen</h3>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.75rem', color: '#CBD5E1' }}>
+                <input 
+                  type="text" 
+                  value={lawyerProfile.name}
+                  onChange={(e) => setLawyerProfile({...lawyerProfile, name: e.target.value})}
+                  style={{ width: '100%', backgroundColor: '#121F49', border: '1px solid #1E3A8A', borderRadius: '0.5rem', padding: '0.5rem', color: '#ffffff', outline: 'none' }} 
+                />
                 <button 
                   onClick={() => setProfileSaved(true)}
-                  style={{ width: '100%', backgroundColor: '#FBBF24', color: '#0A1128', fontWeight: 'bold', padding: '0.75rem', borderRadius: '0.75rem', border: 'none', cursor: 'pointer', marginTop: '0.5rem', fontSize: '0.75rem' }}
+                  style={{ backgroundColor: '#FBBF24', color: '#0A1128', fontWeight: 'bold', padding: '0.5rem', borderRadius: '0.5rem', border: 'none', cursor: 'pointer' }}
                 >
-                  Profiel Opslaan & Direct Openbaar Zetten
+                  Profiel Bijwerken
                 </button>
-                {profileSaved && <p style={{ color: '#34D399', textAlign: 'center', fontWeight: 600 }}>Jouw profiel en foto zijn succesvol bijgewerkt voor cliënten!</p>}
+                {profileSaved && <p style={{ color: '#34D399', fontWeight: 600 }}>Opgeslagen!</p>}
               </div>
             </div>
           </div>
@@ -534,8 +597,8 @@ export default function CompleteLegalPlatform() {
 
         {/* 5. WIE ZIJN WIJ */}
         {currentView === 'about' && (
-          <div style={{ backgroundColor: '#121F49', border: '1px solid #1E3A8A', borderRadius: '1.5rem', padding: '2rem', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            <h2 style={{ fontSize: '1.5rem', fontWeight: 900, color: '#ffffff' }}>Wie zijn wij & Waar we voor staan</h2>
+          <div style={{ backgroundColor: '#121F49', border: '1px solid #1E3A8A', borderRadius: '1.5rem', padding: '1.5rem', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <h2 style={{ fontSize: '1.25rem', fontWeight: 900, color: '#ffffff' }}>Wie zijn wij & Waar we voor staan</h2>
             <p style={{ color: '#CBD5E1', fontSize: '0.875rem', lineHeight: 1.6 }}>
               MijnAdvocaat.online brengt burgers en gespecialiseerde advocaten direct samen. Snel, helder en transparant, vooral wanneer elke seconde telt bij een juridisch spoedgeval of letselschade.
             </p>
@@ -544,8 +607,8 @@ export default function CompleteLegalPlatform() {
 
         {/* 6. HELP & FAQ */}
         {currentView === 'faq' && (
-          <div style={{ backgroundColor: '#121F49', border: '1px solid #1E3A8A', borderRadius: '1.5rem', padding: '2rem', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-            <h2 style={{ fontSize: '1.5rem', fontWeight: 900, color: '#ffffff' }}>Veelgestelde Vragen</h2>
+          <div style={{ backgroundColor: '#121F49', border: '1px solid #1E3A8A', borderRadius: '1.5rem', padding: '1.5rem', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+            <h2 style={{ fontSize: '1.25rem', fontWeight: 900, color: '#ffffff' }}>Veelgestelde Vragen</h2>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', fontSize: '0.875rem' }}>
               <div style={{ borderBottom: '1px solid rgba(30, 58, 138, 0.6)', paddingBottom: '0.75rem' }}>
                 <strong style={{ color: '#ffffff', display: 'block', marginBottom: '0.25rem' }}>Moet ik inloggen voor een spoedmelding of letselschade?</strong>
