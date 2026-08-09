@@ -8,6 +8,9 @@ export default function CompleteLegalPlatform() {
   const [authMode, setAuthMode] = useState('login');
   const [registerSuccess, setRegisterSuccess] = useState(false);
 
+  const [authEmail, setAuthEmail] = useState('');
+  const [authPassword, setAuthPassword] = useState('');
+
   const [caseData, setCaseData] = useState({
     category: 'Strafrecht & Arresteringszaken',
     description: '',
@@ -17,7 +20,6 @@ export default function CompleteLegalPlatform() {
   const [caseSubmitted, setCaseSubmitted] = useState(false);
 
   const [reviewScore, setReviewScore] = useState(5);
-  const [reviewText, setReviewText] = useState('');
   const [reviewSubmitted, setReviewSubmitted] = useState(false);
 
   const handleAuthSubmit = (e: React.FormEvent) => {
@@ -36,14 +38,6 @@ export default function CompleteLegalPlatform() {
   const handleCaseSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setCaseSubmitted(true);
-  };
-
-  // Hulpfunctie om het juiste label voor de dropdown te krijgen
-  const getCategoryGroup = (value: string) => {
-    if (value.includes('Strafrecht') || value.includes('Verkeer')) return 'Strafrecht & Nood';
-    if (value.includes('Arbeids') || value.includes('UWV')) return 'Werk & Inkomen';
-    if (value.includes('Huur') || value.includes('Echtscheiding')) return 'Wonen & Familie';
-    return 'Letselschade & Ongevallen';
   };
 
   return (
@@ -113,7 +107,7 @@ export default function CompleteLegalPlatform() {
                           <option value="Verkeersovertredingen & DUI">Verkeersovertredingen & DUI / Rijbewijs kwijt</option>
                           <option value="Jeugdstrafrecht">Jeugdstrafrecht</option>
                         </optgroup>
-                         <optgroup label="Letselschade & Ongevallen">
+                        <optgroup label="Letselschade & Ongevallen">
                           <option value="Letselschade & Ongevallen">Letselschade na verkeers- of bedrijfsongeval</option>
                         </optgroup>
                         <optgroup label="Werk & Inkomen">
@@ -133,7 +127,7 @@ export default function CompleteLegalPlatform() {
                         <input 
                           type="text" 
                           required
-                          placeholder="Bijv. Rotterdam"
+                          placeholder="Bijv. Rotterdam of Amsterdam"
                           value={caseData.location}
                           onChange={(e) => setCaseData({...caseData, location: e.target.value})}
                           className="w-full bg-[#070D21] border border-blue-900 rounded-xl px-4 py-3 text-slate-100 focus:border-amber-400 focus:outline-none transition"
@@ -181,7 +175,7 @@ export default function CompleteLegalPlatform() {
                   <div className="space-y-2">
                     <h2 className="text-2xl font-bold text-white">Noodsignaal succesvol verzonden!</h2>
                     <p className="text-slate-300 text-sm max-w-md mx-auto">
-                      Advocaten gespecialiseerd in <strong className="text-white">{caseData.category}</strong> te <strong className="text-white">{caseData.location}</strong> hebben jouw melding ontvangen. Je wordt zo snel mogelijk gebeld of gecontacteerd.
+                      Advocaten gespecialiseerd in <strong className="text-white">{caseData.category}</strong> te <strong className="text-white">{caseData.location}</strong> hebben jouw melding ontvangen. Je wordt zo snel mogelijk gecontacteerd.
                     </p>
                   </div>
                   <div className="pt-4">
@@ -206,7 +200,7 @@ export default function CompleteLegalPlatform() {
                 {authMode === 'login' ? 'Inloggen op je Portaal' : 'Account Aanmaken'}
               </h2>
               <p className="text-slate-300 text-xs mt-1">
-                {authMode === 'login' ? 'Beheer je lopende en afgehandelde zaken' : 'Geen e-mailverificatie vereist. Direct aan de slag!'}
+                {authMode === 'login' ? 'Beheer je lopende en afgehandelde zaken' : 'Direct aan de slag binnen jouw portaal!'}
               </p>
             </div>
 
@@ -248,7 +242,7 @@ export default function CompleteLegalPlatform() {
                   <div className="flex justify-between items-center mb-2">
                     <label className="text-xs font-bold uppercase tracking-wider text-amber-400/90">Wachtwoord</label>
                     {authMode === 'login' && (
-                      <a href="#wachtwoord" onClick={(e) => { e.preventDefault(); alert('Instructies om je wachtwoord te resetten zijn naar je verzonden (simulatie).'); }} className="text-xs text-amber-400 hover:underline">Wachtwoord vergeten?</a>
+                      <a href="#wachtwoord" onClick={(e) => { e.preventDefault(); alert('Wachtwoord resetinstructie verzonden.'); }} className="text-xs text-amber-400 hover:underline">Wachtwoord vergeten?</a>
                     )}
                   </div>
                   <input 
@@ -261,8 +255,171 @@ export default function CompleteLegalPlatform() {
                   />
                 </div>
 
+                <div className="flex text-xs space-x-2 text-slate-300 pt-1">
+                  <span onClick={() => setAuthMode('login')} className={`cursor-pointer font-semibold ${authMode === 'login' ? 'text-amber-400 underline' : ''}`}>Inloggen</span>
+                  <span>•</span>
+                  <span onClick={() => setAuthMode('register')} className={`cursor-pointer font-semibold ${authMode === 'register' ? 'text-amber-400 underline' : ''}`}>Account aanmaken</span>
+                </div>
+
                 <button 
                   type="submit"
                   className="w-full bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold py-3.5 rounded-xl transition shadow-lg shadow-amber-400/20 text-sm mt-2"
                 >
-                  {authMode === 'login' ? 'Inloggen' :
+                  {authMode === 'login' ? 'Inloggen op Portaal' : 'Registreren'}
+                </button>
+              </form>
+            ) : (
+              <div className="text-center py-6 space-y-4">
+                <p className="text-emerald-400 font-bold text-sm">✓ Registratie succesvol!</p>
+                <p className="text-xs text-slate-300">Je account is aangemaakt. Klik hieronder om direct in te loggen.</p>
+                <button 
+                  onClick={() => { setAuthMode('login'); setRegisterSuccess(false); }}
+                  className="bg-amber-400 text-slate-950 font-bold px-6 py-2.5 rounded-xl text-xs"
+                >
+                  Naar Inlogscherm
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* 3. CLIËNT DASHBOARD */}
+        {currentView === 'client-dash' && (
+          <div className="bg-[#121F49] border border-blue-900/70 rounded-3xl p-8 shadow-2xl space-y-6">
+            <div className="flex justify-between items-center border-b border-blue-900/60 pb-4">
+              <div>
+                <span className="text-xs font-bold text-amber-400 uppercase tracking-widest">Cliënt Portaal</span>
+                <h2 className="text-2xl font-black text-white">Mijn Zaken & Dossiers</h2>
+              </div>
+              <button 
+                onClick={() => setCurrentView('home')}
+                className="bg-blue-950 hover:bg-blue-900 text-slate-200 border border-blue-800 text-xs px-4 py-2 rounded-xl transition font-medium"
+              >
+                Uitloggen
+              </button>
+            </div>
+
+            <div className="bg-[#070D21] border border-blue-900/60 rounded-2xl p-5 space-y-3">
+              <span className="bg-amber-400/10 text-amber-400 border border-amber-400/20 text-[10px] font-bold px-2.5 py-1 rounded-md uppercase">Lopende Zaak</span>
+              <h3 className="font-bold text-base text-white">Arbeidsconflict & Ontslag op staande voet</h3>
+              <p className="text-xs text-slate-300">Toegewezen Advocaat: <strong className="text-white">Mr. J. de Vries</strong></p>
+              <button 
+                onClick={() => alert('Gezamenlijk portaal & dossierbestand geopend.')}
+                className="bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold px-4 py-2 rounded-xl text-xs transition shadow-md"
+              >
+                Open Gezamenlijk Portaal & Chat
+              </button>
+            </div>
+
+            <div className="bg-[#070D21] border border-blue-900/60 rounded-2xl p-5 space-y-3">
+              <span className="bg-blue-950 text-slate-200 text-[10px] font-medium px-2.5 py-1 rounded-md border border-blue-800">Afgehandeld</span>
+              <h3 className="font-bold text-base text-white">Verkeersovertreding</h3>
+              <p className="text-xs text-slate-300">Toegewezen Advocaat: <strong className="text-white">Mr. A. Bakker</strong></p>
+              
+              {!reviewSubmitted ? (
+                <div className="border-t border-blue-950 pt-3 mt-2 space-y-2">
+                  <p className="text-xs text-slate-300">Beoordeel de service van je advocaat:</p>
+                  <div className="flex space-x-1">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <button
+                        key={star}
+                        onClick={() => setReviewScore(star)}
+                        className={`w-7 h-7 rounded-lg text-xs font-bold transition ${reviewScore >= star ? 'bg-amber-400 text-slate-950' : 'bg-blue-950 text-slate-400'}`}
+                      >
+                        {star}★
+                      </button>
+                    ))}
+                  </div>
+                  <button 
+                    onClick={() => setReviewSubmitted(true)}
+                    className="bg-blue-900 hover:bg-blue-800 text-white font-semibold px-3 py-1.5 rounded-lg text-xs transition mt-1"
+                  >
+                    Plaats Review
+                  </button>
+                </div>
+              ) : (
+                <p className="text-xs text-emerald-400 font-semibold pt-1">✓ Je review van {reviewScore} sterren is succesvol geplaatst!</p>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* 4. ADVOCAAT DASHBOARD */}
+        {currentView === 'lawyer-dash' && (
+          <div className="bg-[#121F49] border border-blue-900/70 rounded-3xl p-8 shadow-2xl space-y-6">
+            <div className="flex justify-between items-center border-b border-blue-900/60 pb-4">
+              <div>
+                <span className="text-xs font-bold text-amber-400 uppercase tracking-widest">Advocaten Portaal</span>
+                <h2 className="text-2xl font-black text-white">Profiel & Nieuwe Zaken</h2>
+              </div>
+              <button 
+                onClick={() => setCurrentView('home')}
+                className="bg-blue-950 hover:bg-blue-900 text-slate-200 border border-blue-800 text-xs px-4 py-2 rounded-xl transition font-medium"
+              >
+                Uitloggen
+              </button>
+            </div>
+
+            <div className="bg-[#070D21] border border-blue-900/60 rounded-2xl p-6 space-y-4">
+              <h3 className="font-bold text-sm text-amber-400 uppercase tracking-wider">👤 Mijn Online Profiel Beheren</h3>
+              <div className="space-y-3 text-xs text-slate-300">
+                <div>
+                  <label className="block mb-1 text-slate-200 font-semibold">Profieldossier / Foto uploaden:</label>
+                  <input type="file" className="block text-slate-400 text-xs file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-blue-950 file:text-amber-400 hover:file:bg-blue-900 cursor-pointer" />
+                </div>
+                <div>
+                  <label className="block mb-1 text-slate-200 font-semibold">Vakgebied(en):</label>
+                  <input type="text" defaultValue="Strafrecht & Letselschade" className="w-full bg-[#121F49] border border-blue-900 rounded-xl px-3 py-2.5 text-white focus:outline-none focus:border-amber-400" />
+                </div>
+                <div>
+                  <label className="block mb-1 text-slate-200 font-semibold">Ervaring:</label>
+                  <input type="text" defaultValue="12 jaar ervaring" className="w-full bg-[#121F49] border border-blue-900 rounded-xl px-3 py-2.5 text-white focus:outline-none focus:border-amber-400" />
+                </div>
+                <button 
+                  onClick={() => alert('Profiel met succes geupdate en online gezet!')}
+                  className="w-full bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold py-3 rounded-xl transition shadow-md mt-2 text-xs"
+                >
+                  Profiel Opslaan & Direct Online Zetten
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* 5. WIE ZIJN WIJ */}
+        {currentView === 'about' && (
+          <div className="bg-[#121F49] border border-blue-900/70 rounded-3xl p-8 shadow-2xl space-y-4">
+            <h2 className="text-2xl font-black text-white">Wie zijn wij & Waar we voor staan</h2>
+            <p className="text-slate-300 text-sm leading-relaxed">
+              MijnAdvocaat.online brengt burgers en gespecialiseerde advocaten direct samen. Snel, helder en transparant, vooral wanneer elke seconde telt bij een juridisch spoedgeval of letselschade.
+            </p>
+          </div>
+        )}
+
+        {/* 6. HELP & FAQ */}
+        {currentView === 'faq' && (
+          <div className="bg-[#121F49] border border-blue-900/70 rounded-3xl p-8 shadow-2xl space-y-6">
+            <h2 className="text-2xl font-black text-white">Veelgestelde Vragen</h2>
+            <div className="space-y-4 text-sm">
+              <div className="border-b border-blue-900/60 pb-3">
+                <strong className="text-white block mb-1">Moet ik inloggen voor een spoedmelding of letselschade?</strong>
+                <span className="text-slate-300 text-xs">Nee, je kunt direct via de startpagina een zaak indienen zonder verplichte registratie.</span>
+              </div>
+              <div className="border-b border-blue-900/60 pb-3">
+                <strong className="text-white block mb-1">Hoe werkt de directe advocaat-match?</strong>
+                <span className="text-slate-300 text-xs">Zodra je jouw zaak indient op de startpagina, worden beschikbare specialisten in jouw regio direct op de hoogte gebracht.</span>
+              </div>
+            </div>
+          </div>
+        )}
+
+      </main>
+
+      {/* FOOTER */}
+      <footer className="text-center py-6 text-xs text-slate-400 border-t border-blue-950 bg-[#070D21]">
+        &copy; 2026 MijnAdvocaat.online. Alle rechten voorbehouden.
+      </footer>
+
+    </div>
+  );
+}
