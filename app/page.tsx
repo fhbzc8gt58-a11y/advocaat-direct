@@ -9,8 +9,8 @@ const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export default function CompleteLegalPlatform() {
   const [currentView, setCurrentView] = useState('home');
-  const [authRole, setAuthRole] = useState('client');
-  const [authMode, setAuthMode] = useState('login');
+  const [userRole, setUserRole] = useState<'client' | 'lawyer'>('client');
+  const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
   const [session, setSession] = useState<any>(null);
 
   // Formulier state
@@ -30,6 +30,15 @@ export default function CompleteLegalPlatform() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
+  const legalCategories = [
+    'Verkeersovertreding & Rijbewijs',
+    'Letselschade & Ongevallen',
+    'Arbeidsconflict & Ontslag',
+    'Strafrecht & Arresteringsbijstand',
+    'Huren, Wonen & Burenrecht',
+    'Familie- & Echtscheidingsrecht'
+  ];
+
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
@@ -44,7 +53,6 @@ export default function CompleteLegalPlatform() {
     return () => subscription.unsubscribe();
   }, []);
 
-  // Realtime chat luisteraar
   useEffect(() => {
     if (!activeCaseId) return;
     fetchMessages(activeCaseId);
@@ -89,7 +97,9 @@ export default function CompleteLegalPlatform() {
     if (authMode === 'login') {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) alert(error.message);
-      else setCurrentView(authRole === 'client' ? 'client-dashboard' : 'lawyer-dashboard');
+      else {
+        setCurrentView(userRole === 'client' ? 'client-dashboard' : 'lawyer-dashboard');
+      }
     } else {
       const { error } = await supabase.auth.signUp({ email, password });
       if (error) alert(error.message);
@@ -105,7 +115,7 @@ export default function CompleteLegalPlatform() {
       return;
     }
 
-    const { data, error } = await supabase.from('cases').insert([
+    const { error } = await supabase.from('cases').insert([
       {
         client_id: session.user.id,
         category,
@@ -115,7 +125,7 @@ export default function CompleteLegalPlatform() {
         funding_type: fundingType,
         status: 'In behandeling'
       }
-    ]).select();
+    ]);
 
     if (error) {
       alert('Fout: ' + error.message);
@@ -142,7 +152,6 @@ export default function CompleteLegalPlatform() {
 
   return (
     <div style={{ minHeight: '100vh', backgroundColor: '#0B0F19', color: '#FFFFFF', fontFamily: 'sans-serif', padding: '15px', boxSizing: 'border-box' }}>
-      {/* Header */}
       <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px', borderBottom: '1px solid #1F2937', paddingBottom: '15px' }}>
         <div>
           <span style={{ background: '#FBBF24', color: '#000', padding: '3px 8px', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 'bold' }}>24/7</span>
@@ -163,26 +172,25 @@ export default function CompleteLegalPlatform() {
         </div>
       </header>
 
-      {/* Navigatie knoppen indien ingelogd */}
       {session && (
         <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
           <button onClick={() => setCurrentView('home')} style={{ flex: 1, padding: '10px', background: currentView === 'home' ? '#FBBF24' : '#1F2937', color: currentView === 'home' ? '#000' : '#FFF', border: 'none', borderRadius: '6px', fontWeight: 'bold' }}>Nieuwe Zaak</button>
-          <button onClick={() => setCurrentView('client-dashboard')} style={{ flex: 1, padding: '10px', background: currentView === 'client-dashboard' ? '#FBBF24' : '#1F2937', color: currentView === 'client-dashboard' ? '#000' : '#FFF', border: 'none', borderRadius: '6px', fontWeight: 'bold' }}>Mijn Portaal</button>
+          <button onClick={() => setCurrentView('client-dashboard')} style={{ flex: 1, padding: '10px', background: currentView === 'client-dashboard' ? '#FBBF24' : '#1F2937', color: currentView === 'client-dashboard' ? '#000' : '#FFF', border: 'none', borderRadius: '6px', fontWeight: 'bold' }}>Cliënt Portaal</button>
+          <button onClick={() => setCurrentView('lawyer-dashboard')} style={{ flex: 1, padding: '10px', background: currentView === 'lawyer-dashboard' ? '#FBBF24' : '#1F2937', color: currentView === 'lawyer-dashboard' ? '#000' : '#FFF', border: 'none', borderRadius: '6px', fontWeight: 'bold' }}>Advocaat Portaal</button>
         </div>
       )}
 
-      {/* VIEW: HOME / ZAAK INDIENEN */}
       {currentView === 'home' && (
         <div style={{ maxWidth: '600px', margin: '0 auto', background: '#111827', padding: '20px', borderRadius: '12px', border: '1px solid #374151' }}>
           <h2 style={{ fontSize: '1.2rem', marginBottom: '5px' }}>Direct juridische bijstand</h2>
-          <p style={{ color: '#9CA3AF', fontSize: '0.9rem', marginBottom: '20px' }}>Selecteer je situatie voor een directe match.</p>
+          <p style={{ color: '#9CA3AF', fontSize: '0.9rem', marginBottom: '20px' }}>Selecteer uw situatie voor een directe match met een specialist.</p>
 
           <form onSubmit={submitCase} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
             <div>
               <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.9rem', fontWeight: 'bold' }}>Rechtsgebied:</label>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                {['Verkeersovertreding & Rijbewijs', 'Arbeidsconflict & Ontslag', 'Strafrecht & Arresteringsbijstand'].map((opt) => (
-                  <div key={opt} onClick={() => setCategory(opt)} style={{ padding: '12px', background: category === opt ? '#1E3A8A' : '#1F2937', border: category === opt ? '2px solid #3B82F6' : '1px solid #4B5563', borderRadius: '8px', cursor: 'pointer', fontSize: '0.95rem' }}>
+                {legalCategories.map((opt) => (
+                  <div key={opt} onClick={() => setCategory(opt)} style={{ padding: '12px', background: category === opt ? '#1E3A8A' : '#1F2937', border: category === opt ? '2px solid #3B82F6' : '1px solid #4B5563', borderRadius: '8px', cursor: 'pointer', fontSize: '0.9rem' }}>
                     {opt}
                   </div>
                 ))}
@@ -190,32 +198,37 @@ export default function CompleteLegalPlatform() {
             </div>
 
             <div>
-              <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.9rem', fontWeight: 'bold' }}>Omschrijving van je situatie:</label>
-              <textarea rows={4} value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Bijv. Ik ben aangehouden voor rijden zonder rijbewijs..." style={{ width: '100%', padding: '12px', background: '#1F2937', color: '#FFF', border: '1px solid #4B5563', borderRadius: '8px', boxSizing: 'border-box' }} required />
+              <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.9rem', fontWeight: 'bold' }}>Omschrijving van uw situatie:</label>
+              <textarea rows={4} value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Bijv. Ik ben aangereden op de snelweg / aangehouden..." style={{ width: '100%', padding: '12px', background: '#1F2937', color: '#FFF', border: '1px solid #4B5563', borderRadius: '8px', boxSizing: 'border-box' }} required />
             </div>
 
             <div>
               <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.9rem', fontWeight: 'bold' }}>Locatie / Plaats:</label>
-              <input type="text" value={location} onChange={(e) => setLocation(e.target.value)} placeholder="Bijv. Amsterdam" style={{ width: '100%', padding: '12px', background: '#1F2937', color: '#FFF', border: '1px solid #4B5563', borderRadius: '8px', boxSizing: 'border-box' }} required />
+              <input type="text" value={location} onChange={(e) => setLocation(e.target.value)} placeholder="Bijv. Rotterdam" style={{ width: '100%', padding: '12px', background: '#1F2937', color: '#FFF', border: '1px solid #4B5563', borderRadius: '8px', boxSizing: 'border-box' }} required />
             </div>
 
             <button type="submit" style={{ background: '#FBBF24', color: '#000', padding: '14px', border: 'none', borderRadius: '8px', fontWeight: 'bold', fontSize: '1rem', cursor: 'pointer', marginTop: '10px' }}>
-              Verstuur naar Advocaat & Start Chat
+              Verstuur naar Database & Start Chat
             </button>
           </form>
         </div>
       )}
 
-      {/* VIEW: AUTHENTICATIE */}
       {currentView === 'auth' && (
         <div style={{ maxWidth: '400px', margin: '0 auto', background: '#111827', padding: '25px', borderRadius: '12px', border: '1px solid #374151' }}>
           <h2>{authMode === 'login' ? 'Inloggen' : 'Registreren'}</h2>
-          <form onSubmit={handleAuth} style={{ display: 'flex', flexDirection: 'column', gap: '15px', marginTop: '15px' }}>
+          
+          <div style={{ display: 'flex', gap: '10px', margin: '15px 0' }}>
+            <button type="button" onClick={() => setUserRole('client')} style={{ flex: 1, padding: '8px', background: userRole === 'client' ? '#3B82F6' : '#1F2937', color: '#FFF', border: 'none', borderRadius: '6px', fontSize: '0.85rem' }}>Cliënt</button>
+            <button type="button" onClick={() => setUserRole('lawyer')} style={{ flex: 1, padding: '8px', background: userRole === 'lawyer' ? '#3B82F6' : '#1F2937', color: '#FFF', border: 'none', borderRadius: '6px', fontSize: '0.85rem' }}>Advocaat</button>
+          </div>
+
+          <form onSubmit={handleAuth} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
             <input type="email" placeholder="E-mailadres" value={email} onChange={(e) => setEmail(e.target.value)} style={{ padding: '12px', background: '#1F2937', color: '#FFF', border: '1px solid #4B5563', borderRadius: '8px' }} required />
             <input type="password" placeholder="Wachtwoord" value={password} onChange={(e) => setPassword(e.target.value)} style={{ padding: '12px', background: '#1F2937', color: '#FFF', border: '1px solid #4B5563', borderRadius: '8px' }} required />
             
             <button type="submit" style={{ background: '#FBBF24', color: '#000', padding: '12px', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer' }}>
-              {authMode === 'login' ? 'Inloggen' : 'Account aanmaken'}
+              {authMode === 'login' ? `Inloggen als ${userRole === 'client' ? 'Cliënt' : 'Advocaat'}` : 'Account aanmaken'}
             </button>
 
             <p style={{ textAlign: 'center', fontSize: '0.85rem', color: '#9CA3AF', cursor: 'pointer' }} onClick={() => setAuthMode(authMode === 'login' ? 'register' : 'login')}>
@@ -225,12 +238,11 @@ export default function CompleteLegalPlatform() {
         </div>
       )}
 
-      {/* VIEW: CLIËNT PORTAAL MET LIVE CHAT & STATUS */}
       {currentView === 'client-dashboard' && (
         <div style={{ maxWidth: '700px', margin: '0 auto' }}>
-          <h2>Jouw Actieve Zaken</h2>
+          <h2>Cliëntenportaal</h2>
           {casesList.length === 0 ? (
-            <p style={{ color: '#9CA3AF' }}>Geen actieve zaken. Dien er eerst een in via de startpagina.</p>
+            <p style={{ color: '#9CA3AF' }}>Geen actieve zaken. Dien er een in via de startpagina.</p>
           ) : (
             casesList.map((c) => (
               <div key={c.id} style={{ background: '#111827', padding: '20px', borderRadius: '12px', border: '1px solid #374151', marginBottom: '20px' }}>
@@ -239,7 +251,6 @@ export default function CompleteLegalPlatform() {
                 <p style={{ fontSize: '0.9rem', color: '#D1D5DB' }}><strong>Locatie:</strong> {c.location}</p>
                 <p style={{ fontSize: '0.9rem', color: '#34D399' }}><strong>Status:</strong> {c.status}</p>
 
-                {/* Status Tracker */}
                 <div style={{ display: 'flex', gap: '5px', margin: '15px 0' }}>
                   <div style={{ flex: 1, height: '4px', background: '#34D399', borderRadius: '2px' }}></div>
                   <div style={{ flex: 1, height: '4px', background: '#34D399', borderRadius: '2px' }}></div>
@@ -253,13 +264,12 @@ export default function CompleteLegalPlatform() {
                   <span>4. Behandeling</span>
                 </div>
 
-                {/* Live Chat Component */}
                 <div style={{ background: '#0F172A', border: '1px solid #334155', borderRadius: '10px', padding: '15px', marginTop: '15px' }}>
-                  <h4 style={{ margin: '0 0 10px 0', fontSize: '0.95rem', color: '#FBBF24' }}>Beveiligde Live Chat met Advocaat</h4>
+                  <h4 style={{ margin: '0 0 10px 0', fontSize: '0.95rem', color: '#FBBF24' }}>Beveiligde Live Chat</h4>
                   
                   <div style={{ height: '180px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '10px', paddingRight: '5px' }}>
                     {messages.length === 0 ? (
-                      <p style={{ color: '#64748B', fontSize: '0.85rem', textAlign: 'center', marginTop: '60px' }}>Nog geen berichten. Stel hieronder je eerste vraag.</p>
+                      <p style={{ color: '#64748B', fontSize: '0.85rem', textAlign: 'center', marginTop: '60px' }}>Nog geen berichten in deze zaak.</p>
                     ) : (
                       messages.map((m) => {
                         const isMe = session?.user?.id === m.sender_id;
@@ -277,6 +287,27 @@ export default function CompleteLegalPlatform() {
                     <button type="submit" style={{ background: '#FBBF24', color: '#000', border: 'none', padding: '10px 16px', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer', fontSize: '0.85rem' }}>Verstuur</button>
                   </form>
                 </div>
+              </div>
+            ))
+          )}
+        </div>
+      )}
+
+      {currentView === 'lawyer-dashboard' && (
+        <div style={{ maxWidth: '700px', margin: '0 auto' }}>
+          <h2>Advocatenportaal (Overzicht Database Zaken)</h2>
+          {casesList.length === 0 ? (
+            <p style={{ color: '#9CA3AF' }}>Geen openstaande zaken in het systeem.</p>
+          ) : (
+            casesList.map((c) => (
+              <div key={c.id} style={{ background: '#111827', padding: '20px', borderRadius: '12px', border: '1px solid #374151', marginBottom: '20px' }}>
+                <span style={{ background: '#3B82F6', color: '#FFF', padding: '3px 8px', borderRadius: '4px', fontSize: '0.75rem' }}>Toegewezen aan u</span>
+                <h3 style={{ margin: '10px 0 10px 0', color: '#FBBF24' }}>{c.category}</h3>
+                <p style={{ fontSize: '0.9rem', color: '#D1D5DB' }}><strong>Client Situatie:</strong> {c.description}</p>
+                <p style={{ fontSize: '0.9rem', color: '#D1D5DB' }}><strong>Locatie:</strong> {c.location}</p>
+                <button onClick={() => { setActiveCaseId(c.id); setCurrentView('client-dashboard'); }} style={{ background: '#FBBF24', color: '#000', border: 'none', padding: '8px 14px', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer', marginTop: '10px' }}>
+                  Open Zaak & Chat met Cliënt
+                </button>
               </div>
             ))
           )}
