@@ -9,7 +9,7 @@ export default function CompleteLegalPlatform() {
   const [registerSuccess, setRegisterSuccess] = useState(false);
 
   // Form states voor spoed
-  const [category, setCategory] = useState('Strafrecht & Arresteringszaken');
+  const [category, setCategory] = useState('Letselschade & Ongevallen');
   const [location, setLocation] = useState('');
   const [description, setDescription] = useState('');
   const [caseSubmitted, setCaseSubmitted] = useState(false);
@@ -52,6 +52,9 @@ export default function CompleteLegalPlatform() {
                   <div>
                     <label style={{ display: 'block', fontSize: '12px', fontWeight: 'bold', color: '#F4D160', marginBottom: '6px' }}>UITGEBREID RECHTSGEBIED</label>
                     <select value={category} onChange={(e) => setCategory(e.target.value)} style={{ width: '100%', padding: '12px', borderRadius: '10px', backgroundColor: '#070F2B', color: '#FFF', border: '1px solid #1B2A6C', boxSizing: 'border-box' }}>
+                      <optgroup label="Letselschade & Ongevallen">
+                        <option value="Letselschade & Ongevallen">Letselschade na verkeersongeval, bedrijfsongeval of medische fout</option>
+                      </optgroup>
                       <optgroup label="Strafrecht & Nood">
                         <option value="Strafrecht & Arresteringszaken">Strafrecht & Arresteringszaken</option>
                         <option value="Verkeersovertredingen & DUI">Verkeersovertredingen & Rijbewijs kwijt</option>
@@ -87,7 +90,7 @@ export default function CompleteLegalPlatform() {
               <div style={{ textAlign: 'center', padding: '30px 0' }}>
                 <div style={{ fontSize: '48px', marginBottom: '12px' }}>✅</div>
                 <h2 style={{ fontSize: '22px', fontWeight: 'bold', marginBottom: '8px' }}>Noodsignaal Verzonden!</h2>
-                <p style={{ color: '#94A3B8', fontSize: '14px', marginBottom: '24px' }}>Advocaten voor {category} in {location} zijn direct ingeschakeld om contact met je op te nemen.</p>
+                <p style={{ color: '#94A3B8', fontSize: '14px', marginBottom: '24px' }}>Advocaten gespecialiseerd in {category} in {location} zijn direct ingeschakeld.</p>
                 <button onClick={() => setCaseSubmitted(false)} style={{ backgroundColor: '#1B2A6C', color: '#FFF', border: 'none', padding: '12px 24px', borderRadius: '10px', cursor: 'pointer', fontWeight: 'bold' }}>Nieuwe melding</button>
               </div>
             )}
@@ -158,7 +161,7 @@ export default function CompleteLegalPlatform() {
             {/* Lopende zaak */}
             <div style={{ backgroundColor: '#070F2B', border: '1px solid #1B2A6C', borderRadius: '14px', padding: '16px' }}>
               <span style={{ backgroundColor: 'rgba(244, 209, 96, 0.15)', color: '#F4D160', padding: '2px 8px', borderRadius: '6px', fontSize: '11px', fontWeight: 'bold' }}>Lopende Zaak</span>
-              <h4 style={{ margin: '8px 0 4px 0', fontSize: '15px' }}>Arbeidsconflict & Ontslag op staande voet</h4>
+              <h4 style={{ margin: '8px 0 4px 0', fontSize: '15px' }}>Letselschade & Ongevallen</h4>
               <p style={{ fontSize: '12px', color: '#94A3B8', margin: '0 0 10px 0' }}>Advocaat: Mr. J. de Vries</p>
               <button onClick={() => alert('Gezamenlijk dossier & chat geopend.')} style={{ backgroundColor: '#F4D160', color: '#070F2B', border: 'none', padding: '8px 14px', borderRadius: '8px', fontSize: '12px', fontWeight: 'bold', cursor: 'pointer' }}>Open Gezamenlijk Portaal</button>
             </div>
@@ -201,7 +204,7 @@ export default function CompleteLegalPlatform() {
               <h3 style={{ fontSize: '14px', fontWeight: 'bold', color: '#F4D160', margin: 0 }}>👤 Mijn Online Profiel Beheren</h3>
               <div style={{ fontSize: '12px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 <label>Profieldossier / Foto uploaden: <input type="file" style={{ display: 'block', marginTop: '4px' }} /></label>
-                <label>Vakgebied(en): <input type="text" defaultValue="Strafrecht & Arbeidsrecht" style={{ width: '100%', padding: '8px', borderRadius: '6px', backgroundColor: '#0A174E', border: '1px solid #1B2A6C', color: '#FFF', marginTop: '4px' }} /></label>
+                <label>Vakgebied(en): <input type="text" defaultValue="Letselschade & Strafrecht" style={{ width: '100%', padding: '8px', borderRadius: '6px', backgroundColor: '#0A174E', border: '1px solid #1B2A6C', color: '#FFF', marginTop: '4px' }} /></label>
                 <label>Ervaring (Hoe lang actief): <input type="text" defaultValue="10 jaar ervaring" style={{ width: '100%', padding: '8px', borderRadius: '6px', backgroundColor: '#0A174E', border: '1px solid #1B2A6C', color: '#FFF', marginTop: '4px' }} /></label>
                 <label>E-mail & Contactgegevens: <input type="email" defaultValue="mr.advocaat@mijnadvocaat.online" style={{ width: '100%', padding: '8px', borderRadius: '6px', backgroundColor: '#0A174E', border: '1px solid #1B2A6C', color: '#FFF', marginTop: '4px' }} /></label>
                 <button onClick={() => alert('Profiel succesvol online gezet!')} style={{ backgroundColor: '#F4D160', color: '#070F2B', border: 'none', padding: '10px', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer', marginTop: '4px' }}>Profiel Opslaan & Online zetten</button>
@@ -214,7 +217,7 @@ export default function CompleteLegalPlatform() {
         {tab === 'about' && (
           <div style={{ backgroundColor: '#0A174E', border: '1px solid #1B2A6C', borderRadius: '20px', padding: '24px' }}>
             <h2 style={{ fontSize: '22px', fontWeight: 'bold', marginBottom: '12px' }}>Wie zijn wij & Waar we voor staan</h2>
-            <p style={{ color: '#94A3B8', fontSize: '14px', lineHeight: '1.6' }}>MijnAdvocaat.online brengt burgers en gespecialiseerde advocaten direct samen. Snel, helder en transparant, vooral wanneer elke seconde telt bij een juridisch spoedgeval.</p>
+            <p style={{ color: '#94A3B8', fontSize: '14px', lineHeight: '1.6' }}>MijnAdvocaat.online brengt burgers en gespecialiseerde advocaten direct samen. Snel, helder en transparant, vooral wanneer elke seconde telt bij een juridisch spoedgeval of letselschade.</p>
           </div>
         )}
 
@@ -223,7 +226,7 @@ export default function CompleteLegalPlatform() {
           <div style={{ backgroundColor: '#0A174E', border: '1px solid #1B2A6C', borderRadius: '20px', padding: '24px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
             <h2 style={{ fontSize: '22px', fontWeight: 'bold', marginBottom: '8px' }}>Veelgestelde Vragen</h2>
             <div style={{ fontSize: '13px', borderBottom: '1px solid #1B2A6C', paddingBottom: '8px' }}>
-              <strong>Moet ik inloggen voor een spoedmelding?</strong><br /><span style={{ color: '#94A3B8' }}>Nee, je kunt direct via de startpagina een zaak indienen zonder account.</span>
+              <strong>Moet ik inloggen voor een spoedmelding of letselschade?</strong><br /><span style={{ color: '#94A3B8' }}>Nee, je kunt direct via de startpagina een zaak indienen zonder verplichte registratie.</span>
             </div>
             <div style={{ fontSize: '13px', borderBottom: '1px solid #1B2A6C', paddingBottom: '8px' }}>
               <strong>Hoe werkt het gezamenlijke portaal?</strong><br /><span style={{ color: '#94A3B8' }}>Zodra een advocaat je zaak aanneemt, kun je via je cliëntenportaal direct dossierinformatie inzien.</span>
