@@ -4,7 +4,7 @@ import { useState } from 'react';
 
 export default function Home() {
   const [view, setView] = useState('home');
-  const [submitted, setSubmitted] = useState(false);
+  const [submitted, setSubmitted] = useState(false); 
 
   if (view === 'client') {
     return (
