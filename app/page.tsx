@@ -12,6 +12,7 @@ export default function CompleteLegalPlatform() {
   const [userRole, setUserRole] = useState<'client' | 'lawyer'>('client');
   const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
   const [session, setSession] = useState<any>(null);
+  const [errorMessage, setErrorMessage] = useState('');
 
   // Formulier state
   const [category, setCategory] = useState('Verkeersovertreding & Rijbewijs');
@@ -94,16 +95,23 @@ export default function CompleteLegalPlatform() {
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrorMessage('');
+
     if (authMode === 'login') {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) alert(error.message);
-      else {
+      if (error) {
+        setErrorMessage(error.message);
+      } else {
         setCurrentView(userRole === 'client' ? 'client-dashboard' : 'lawyer-dashboard');
       }
     } else {
       const { error } = await supabase.auth.signUp({ email, password });
-      if (error) alert(error.message);
-      else alert('Registratie succesvol! Je kunt nu inloggen.');
+      if (error) {
+        setErrorMessage(error.message);
+      } else {
+        alert('Registratie succesvol! Je kunt nu inloggen.');
+        setAuthMode('login');
+      }
     }
   };
 
@@ -218,6 +226,12 @@ export default function CompleteLegalPlatform() {
         <div style={{ maxWidth: '400px', margin: '0 auto', background: '#111827', padding: '25px', borderRadius: '12px', border: '1px solid #374151' }}>
           <h2>{authMode === 'login' ? 'Inloggen' : 'Registreren'}</h2>
           
+          {errorMessage && (
+            <div style={{ background: '#7F1D1D', color: '#FCA5A5', padding: '10px', borderRadius: '6px', fontSize: '0.85rem', margin: '10px 0' }}>
+              {errorMessage}
+            </div>
+          )}
+
           <div style={{ display: 'flex', gap: '10px', margin: '15px 0' }}>
             <button type="button" onClick={() => setUserRole('client')} style={{ flex: 1, padding: '8px', background: userRole === 'client' ? '#3B82F6' : '#1F2937', color: '#FFF', border: 'none', borderRadius: '6px', fontSize: '0.85rem' }}>Cliënt</button>
             <button type="button" onClick={() => setUserRole('lawyer')} style={{ flex: 1, padding: '8px', background: userRole === 'lawyer' ? '#3B82F6' : '#1F2937', color: '#FFF', border: 'none', borderRadius: '6px', fontSize: '0.85rem' }}>Advocaat</button>
@@ -225,13 +239,13 @@ export default function CompleteLegalPlatform() {
 
           <form onSubmit={handleAuth} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
             <input type="email" placeholder="E-mailadres" value={email} onChange={(e) => setEmail(e.target.value)} style={{ padding: '12px', background: '#1F2937', color: '#FFF', border: '1px solid #4B5563', borderRadius: '8px' }} required />
-            <input type="password" placeholder="Wachtwoord" value={password} onChange={(e) => setPassword(e.target.value)} style={{ padding: '12px', background: '#1F2937', color: '#FFF', border: '1px solid #4B5563', borderRadius: '8px' }} required />
+            <input type="password" placeholder="Wachtwoord (min. 6 tekens)" value={password} onChange={(e) => setPassword(e.target.value)} style={{ padding: '12px', background: '#1F2937', color: '#FFF', border: '1px solid #4B5563', borderRadius: '8px' }} required />
             
             <button type="submit" style={{ background: '#FBBF24', color: '#000', padding: '12px', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer' }}>
               {authMode === 'login' ? `Inloggen als ${userRole === 'client' ? 'Cliënt' : 'Advocaat'}` : 'Account aanmaken'}
             </button>
 
-            <p style={{ textAlign: 'center', fontSize: '0.85rem', color: '#9CA3AF', cursor: 'pointer' }} onClick={() => setAuthMode(authMode === 'login' ? 'register' : 'login')}>
+            <p style={{ textAlign: 'center', fontSize: '0.85rem', color: '#9CA3AF', cursor: 'pointer' }} onClick={() => { setAuthMode(authMode === 'login' ? 'register' : 'login'); setErrorMessage(''); }}>
               {authMode === 'login' ? 'Geen account? Klik hier' : 'Al een account? Log in'}
             </p>
           </form>
@@ -250,19 +264,6 @@ export default function CompleteLegalPlatform() {
                 <p style={{ fontSize: '0.9rem', color: '#D1D5DB' }}><strong>Situatie:</strong> {c.description}</p>
                 <p style={{ fontSize: '0.9rem', color: '#D1D5DB' }}><strong>Locatie:</strong> {c.location}</p>
                 <p style={{ fontSize: '0.9rem', color: '#34D399' }}><strong>Status:</strong> {c.status}</p>
-
-                <div style={{ display: 'flex', gap: '5px', margin: '15px 0' }}>
-                  <div style={{ flex: 1, height: '4px', background: '#34D399', borderRadius: '2px' }}></div>
-                  <div style={{ flex: 1, height: '4px', background: '#34D399', borderRadius: '2px' }}></div>
-                  <div style={{ flex: 1, height: '4px', background: '#FBBF24', borderRadius: '2px' }}></div>
-                  <div style={{ flex: 1, height: '4px', background: '#374151', borderRadius: '2px' }}></div>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.7rem', color: '#9CA3AF', marginBottom: '20px' }}>
-                  <span>1. Ontvangen</span>
-                  <span>2. Beoordeeld</span>
-                  <span>3. Intake</span>
-                  <span>4. Behandeling</span>
-                </div>
 
                 <div style={{ background: '#0F172A', border: '1px solid #334155', borderRadius: '10px', padding: '15px', marginTop: '15px' }}>
                   <h4 style={{ margin: '0 0 10px 0', fontSize: '0.95rem', color: '#FBBF24' }}>Beveiligde Live Chat</h4>
